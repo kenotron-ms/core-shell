@@ -17,7 +17,8 @@
     }
   },
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly"
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "react": "^18",
@@ -27,13 +28,14 @@
     "zustand": "^5"
   },
   "devDependencies": {
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4",
+    "react": "^18",
+    "react-dom": "^18",
     "typescript": "^5",
     "vite": "^5",
     "vite-plugin-dts": "^4",
-    "react": "^18",
-    "react-dom": "^18",
-    "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "vitest": "^1.6.1"
   }
 }
