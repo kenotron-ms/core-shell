@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ExtensionErrorBoundary } from '../extension/ExtensionErrorBoundary'
 
 interface Props {
   height: number
@@ -20,7 +21,9 @@ export function Panel({ height, collapsed, onCollapseToggle, children }: Props) 
         </button>
       </div>
       {!collapsed && (
-        <div className="cs-panel__content">{children}</div>
+        <ExtensionErrorBoundary extensionId="panel">
+          <div className="cs-panel__content">{children}</div>
+        </ExtensionErrorBoundary>
       )}
     </div>
   )
