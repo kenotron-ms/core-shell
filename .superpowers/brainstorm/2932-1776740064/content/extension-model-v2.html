@@ -1,0 +1,83 @@
+<h2>Section 3 — Extension Model</h2>
+<p class="subtitle">What you write to add a new canvas. The complete contract — no more, no less.</p>
+
+<div class="section">
+  <h3>An extension is one folder with one entry point</h3>
+  <div class="mockup">
+    <div class="mockup-header">extensions/amplifier-canvas/index.tsx — exports exactly one thing</div>
+    <div class="mockup-body">
+<pre style="margin:0; font-family:'Menlo','Monaco',monospace; font-size:12px; line-height:1.7; color:#c9d1d9; overflow-x:auto;">
+export const manifest = {
+  id:          'amplifier-canvas',
+  displayName: 'Amplifier Canvas',
+  version:     '0.1.0',
+
+  contributes: {
+    activityRail: { icon: SessionsIcon, title: 'Sessions' },
+    sidebar:      SessionListSidebar,
+    canvas:       CanvasMain,            // &larr; the primary UI
+    panel:        { title: 'Terminal', component: TerminalPanel },
+    statusBar:    { position: 'left', component: StatusItem },
+  },
+}
+</pre>
+    </div>
+  </div>
+  <p style="font-size:12px; color:#8b949e; margin-top:8px;">Components are passed as values — not strings, not paths. No indirection. The shell imports your manifest and mounts whatever you put in each slot.</p>
+</div>
+
+<div class="section">
+  <h3>What the shell gives your extension — <code>useShell()</code></h3>
+  <div class="mockup">
+    <div class="mockup-header">Available inside any extension component</div>
+    <div class="mockup-body">
+<pre style="margin:0; font-family:'Menlo','Monaco',monospace; font-size:12px; line-height:1.7; color:#c9d1d9; overflow-x:auto;">
+const shell = useShell()
+
+// IPC bridge &rarr; main process (file system, PTY)
+await shell.ipc.readFile(path)
+await shell.ipc.writeFile(path, content)
+const unsub = shell.ipc.watchDir(path, callback)
+const pty   = await shell.ipc.spawn(cmd, args)
+
+// Navigation
+shell.openTab(extensionId)
+shell.setTitle(text)
+
+// Command palette
+shell.registerCommand('canvas.clearSessions', handler)
+shell.executeCommand('workbench.reload')
+
+// Per-extension state (isolated, persisted by shell)
+const [state, setState] = useExtensionStore({ sessions: [], active: null })
+</pre>
+    </div>
+  </div>
+  <p style="font-size:12px; color:#8b949e; margin-top:8px;">Extensions never import from Electron or Node directly. Everything goes through this bridge — which is why extension code is already cloud-portable.</p>
+</div>
+
+<div class="section">
+  <h3>Loading on startup</h3>
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; font-size:12px;">
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px;">
+      <div style="font-size:18px; margin-bottom:6px;">🔍</div>
+      <div style="font-weight:600; color:#c9d1d9; margin-bottom:4px;">1. Discover</div>
+      <div style="color:#8b949e; line-height:1.5;">Scan <code>extensions/</code> for subfolders with an <code>index.tsx</code></div>
+    </div>
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px;">
+      <div style="font-size:18px; margin-bottom:6px;">📦</div>
+      <div style="font-weight:600; color:#c9d1d9; margin-bottom:4px;">2. Import</div>
+      <div style="color:#8b949e; line-height:1.5;">Dynamic <code>import()</code> of the manifest. Components stay lazy until activated.</div>
+    </div>
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px;">
+      <div style="font-size:18px; margin-bottom:6px;">🗂</div>
+      <div style="font-weight:600; color:#c9d1d9; margin-bottom:4px;">3. Register</div>
+      <div style="color:#8b949e; line-height:1.5;">Contributions added to slot registry. Activity icon appears. Commands registered.</div>
+    </div>
+    <div style="background:#1c2d1e; border:1.5px solid #3fb950; border-radius:6px; padding:12px;">
+      <div style="font-size:18px; margin-bottom:6px;">🛡</div>
+      <div style="font-weight:600; color:#3fb950; margin-bottom:4px;">4. Mount</div>
+      <div style="color:#8b949e; line-height:1.5;">Component mounts inside a React error boundary. Crash = that slot only.</div>
+    </div>
+  </div>
+</div>

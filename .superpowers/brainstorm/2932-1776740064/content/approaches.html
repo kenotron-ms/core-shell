@@ -1,0 +1,113 @@
+<h2>Three architectural approaches for core-shell</h2>
+<p class="subtitle">How the shell and its extensions relate to each other. Pick the architecture, everything else follows.</p>
+
+<div class="options" style="gap:20px;">
+
+  <!-- APPROACH 1: RECOMMENDED -->
+  <div class="option" data-choice="1" onclick="toggleSelect(this)" style="border:2px solid #3fb950; position:relative;">
+    <div style="position:absolute;top:-10px;right:12px;background:#3fb950;color:#0d1117;font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;letter-spacing:.05em;">RECOMMENDED</div>
+    <div class="letter" style="background:#3fb950;color:#0d1117;">1</div>
+    <div class="content" style="flex:1;">
+      <h3>Thin React Shell — Extensions Are Components</h3>
+      <p style="margin-bottom:12px;">The shell is a React layout engine. Extensions export React components that mount into named slots. No process separation. Everything in one renderer.</p>
+
+      <!-- Mini architecture diagram -->
+      <div style="background:#0d1117;border-radius:6px;padding:12px;font-family:monospace;font-size:11px;line-height:1.8;color:#c9d1d9;">
+        <div style="color:#8b949e;">/* Electron Renderer (one Chromium process) */</div>
+        <div style="margin-left:8px;">
+          <div style="color:#58a6ff;">React Shell</div>
+          <div style="margin-left:16px;display:flex;flex-direction:column;gap:2px;">
+            <div><span style="color:#8b949e;">├─ </span><span style="background:#1c2d1e;color:#3fb950;padding:1px 6px;border-radius:3px;">ext-amplifier-canvas</span> <span style="color:#8b949e;">→ mounts Canvas slot</span></div>
+            <div><span style="color:#8b949e;">├─ </span><span style="background:#1c2d1e;color:#3fb950;padding:1px 6px;border-radius:3px;">ext-git-panel</span> <span style="color:#8b949e;">→ mounts Sidebar slot</span></div>
+            <div><span style="color:#8b949e;">└─ </span><span style="background:#1c2d1e;color:#3fb950;padding:1px 6px;border-radius:3px;">ext-status-items</span> <span style="color:#8b949e;">→ mounts StatusBar slot</span></div>
+          </div>
+        </div>
+        <div style="margin-top:6px;color:#8b949e;">/* Extension author writes: */</div>
+        <div style="color:#d2a8ff;">export default { manifest, Canvas, SidebarPanel }</div>
+      </div>
+
+      <div class="pros-cons" style="margin-top:12px;">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>Zero friction — one export, done</li>
+          <li>Hot reload works automatically</li>
+          <li>Share React context, Zustand stores</li>
+          <li>Cloud-portable (no Node.js APIs in extensions)</li>
+        </ul></div>
+        <div class="cons"><h4>Trade-offs</h4><ul>
+          <li>Extension crash → shell crash</li>
+          <li>No process isolation for marketplace</li>
+          <li>(fixable later with sandbox layer)</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPROACH 2 -->
+  <div class="option" data-choice="2" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content" style="flex:1;">
+      <h3>Extension Host + WebViews — VS Code Model</h3>
+      <p style="margin-bottom:12px;">Separate Node.js extension host process. Canvas content renders in sandboxed WebContentsViews. Full process isolation. High fidelity to VS Code's architecture.</p>
+
+      <div style="background:#0d1117;border-radius:6px;padding:12px;font-family:monospace;font-size:11px;line-height:1.8;color:#c9d1d9;">
+        <div style="color:#58a6ff;">Electron Main Process</div>
+        <div style="margin-left:16px;">
+          <div><span style="color:#8b949e;">├─ </span><span style="background:#2d1b00;color:#f0883e;padding:1px 6px;border-radius:3px;">Extension Host (Node.js)</span></div>
+          <div style="margin-left:28px;color:#8b949e;">├─ ext-A.js  ↔  IPC  ↔  shell API</div>
+          <div style="margin-left:28px;color:#8b949e;">└─ ext-B.js  ↔  IPC  ↔  shell API</div>
+          <div style="margin-top:4px;"><span style="color:#8b949e;">└─ </span><span style="background:#1c2d3a;color:#58a6ff;padding:1px 6px;border-radius:3px;">WebContentsViews</span> <span style="color:#8b949e;">(sandboxed)</span></div>
+          <div style="margin-left:28px;color:#8b949e;">├─ ext-A canvas (isolated renderer)</div>
+          <div style="margin-left:28px;color:#8b949e;">└─ ext-B canvas (isolated renderer)</div>
+        </div>
+      </div>
+
+      <div class="pros-cons" style="margin-top:12px;">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>True process isolation</li>
+          <li>Extension crash is contained</li>
+          <li>Extensions can use Node.js APIs</li>
+        </ul></div>
+        <div class="cons"><h4>Trade-offs</h4><ul>
+          <li>6–12 months to build well</li>
+          <li>IPC for every UI interaction</li>
+          <li>Big friction for extension authors</li>
+          <li>Harder to port to cloud</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPROACH 3 -->
+  <div class="option" data-choice="3" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content" style="flex:1;">
+      <h3>Hybrid — Trusted Components + Optional Sandbox</h3>
+      <p style="margin-bottom:12px;">First-party extensions (amplifier-canvas, your own tools) run as React components in the shell. Third-party marketplace extensions get sandboxed in WebContentsViews. Trust level in manifest.</p>
+
+      <div style="background:#0d1117;border-radius:6px;padding:12px;font-family:monospace;font-size:11px;line-height:1.8;color:#c9d1d9;">
+        <div style="color:#58a6ff;">React Shell (Renderer)</div>
+        <div style="margin-left:16px;">
+          <div><span style="color:#8b949e;">├─ </span><span style="background:#1c2d1e;color:#3fb950;padding:1px 6px;border-radius:3px;">trusted: amplifier-canvas</span> <span style="color:#8b949e;">← inline</span></div>
+          <div><span style="color:#8b949e;">├─ </span><span style="background:#1c2d1e;color:#3fb950;padding:1px 6px;border-radius:3px;">trusted: git-panel</span>  <span style="color:#8b949e;">← inline</span></div>
+          <div><span style="color:#8b949e;">└─ </span><span style="background:#2d1b00;color:#f0883e;padding:1px 6px;border-radius:3px;">sandboxed: 3rd-party-ext</span> <span style="color:#8b949e;">← WebView</span></div>
+        </div>
+      </div>
+
+      <div class="pros-cons" style="margin-top:12px;">
+        <div class="pros"><h4>Pros</h4><ul>
+          <li>No friction for your own work (trusted)</li>
+          <li>Isolation when marketplace opens</li>
+          <li>Gradual migration path</li>
+        </ul></div>
+        <div class="cons"><h4>Trade-offs</h4><ul>
+          <li>Two extension APIs to maintain</li>
+          <li>Trust model needs careful design</li>
+          <li>More complex than Approach 1</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Approach 1 is the right call for now — you can add the sandbox layer from Approach 3 when a public marketplace becomes real. Don't build isolation you don't need yet.</p>

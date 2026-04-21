@@ -1,0 +1,165 @@
+<h2>Section 2 — Shell Chrome & Layout</h2>
+<p class="subtitle">The permanent VS Code-inspired anatomy. Every region is a named slot. Does this match what you had in mind?</p>
+
+<div class="mockup">
+  <div class="mockup-header">core-shell UI anatomy (wireframe)</div>
+  <div class="mockup-body" style="padding:0; overflow:hidden; border-radius:0 0 6px 6px;">
+
+    <!-- Full shell wireframe -->
+    <div style="display:flex; flex-direction:column; height:480px; font-family:monospace; font-size:10px; background:#0d1117;">
+
+      <!-- TITLE BAR -->
+      <div style="height:28px; background:#161b22; border-bottom:1px solid #21262d; display:flex; align-items:center; padding:0 12px; gap:8px; flex-shrink:0; position:relative;">
+        <div style="display:flex; gap:5px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#ff5f57;"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:#febc2e;"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:#28c840;"></div>
+        </div>
+        <div style="flex:1; text-align:center; color:#8b949e; font-size:10px;">core-shell — amplifier-canvas</div>
+        <div style="position:absolute; top:-1px; left:50%; transform:translateX(-50%); background:#0d1117; border:1px solid #388bfd; border-top:none; border-radius:0 0 4px 4px; padding:1px 12px;">
+          <span style="color:#58a6ff; font-size:8px; letter-spacing:.05em;">TITLE BAR</span>
+        </div>
+      </div>
+
+      <!-- TAB BAR -->
+      <div style="height:32px; background:#0d1117; border-bottom:1px solid #21262d; display:flex; align-items:flex-end; padding:0 0 0 50px; flex-shrink:0; position:relative;">
+        <div style="display:flex; align-items:flex-end; gap:1px;">
+          <div style="padding:5px 14px; background:#161b22; border:1px solid #21262d; border-bottom:none; border-radius:4px 4px 0 0; color:#c9d1d9; font-size:9px; border-top:1.5px solid #388bfd;">amplifier-canvas ×</div>
+          <div style="padding:5px 14px; background:#0d1117; border:1px solid #21262d; border-bottom:none; border-radius:4px 4px 0 0; color:#6e7681; font-size:9px;">git-panel ×</div>
+          <div style="padding:5px 14px; color:#6e7681; font-size:14px; margin-bottom:2px;">+</div>
+        </div>
+        <div style="position:absolute; top:-1px; right:12px; background:#0d1117; border:1px solid #388bfd; border-top:none; border-radius:0 0 4px 4px; padding:1px 12px;">
+          <span style="color:#58a6ff; font-size:8px; letter-spacing:.05em;">TAB BAR</span>
+        </div>
+      </div>
+
+      <!-- MAIN BODY: activity rail + sidebar + canvas + right sidebar -->
+      <div style="flex:1; display:flex; overflow:hidden; min-height:0;">
+
+        <!-- ACTIVITY RAIL -->
+        <div style="width:44px; background:#161b22; border-right:1px solid #21262d; display:flex; flex-direction:column; align-items:center; padding:6px 0; gap:2px; flex-shrink:0; position:relative;">
+          <!-- Top icons (extension-contributed) -->
+          <div style="width:32px;height:32px;background:#21262d;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;border:1.5px solid #388bfd;">🗂</div>
+          <div style="width:32px;height:32px;background:transparent;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6e7681;">🔀</div>
+          <div style="width:32px;height:32px;background:transparent;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6e7681;">🧩</div>
+          <div style="width:32px;height:32px;background:transparent;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6e7681;">🔍</div>
+          <!-- Spacer -->
+          <div style="flex:1;"></div>
+          <!-- Bottom icons (settings, etc.) -->
+          <div style="width:32px;height:32px;background:transparent;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6e7681;">⚙️</div>
+          <!-- Label -->
+          <div style="position:absolute; top:50%; left:46px; transform:translateY(-50%); background:#0d1117; border:1px solid #388bfd; border-radius:0 4px 4px 0; padding:2px 8px; white-space:nowrap; z-index:10;">
+            <span style="color:#58a6ff; font-size:8px; letter-spacing:.05em;">ACTIVITY RAIL</span>
+          </div>
+        </div>
+
+        <!-- LEFT SIDEBAR -->
+        <div style="width:180px; background:#161b22; border-right:1px solid #21262d; display:flex; flex-direction:column; flex-shrink:0; position:relative; overflow:hidden;">
+          <div style="padding:6px 8px; border-bottom:1px solid #21262d; color:#8b949e; font-size:9px; text-transform:uppercase; letter-spacing:.06em;">SESSIONS</div>
+          <div style="flex:1; padding:4px; overflow-y:auto;">
+            <div style="padding:3px 6px; font-size:9px; color:#8b949e; margin-bottom:2px;">▼ PROJECT: amplifier</div>
+            <div style="padding:3px 12px; font-size:9px; color:#c9d1d9; background:#21262d; border-radius:3px; margin-bottom:1px; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#f0883e;display:inline-block;"></span>session-1</div>
+            <div style="padding:3px 12px; font-size:9px; color:#6e7681; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;display:inline-block;"></span>session-2</div>
+            <div style="padding:3px 12px; font-size:9px; color:#6e7681; display:flex; align-items:center; gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#6e7681;display:inline-block;"></span>session-3</div>
+          </div>
+          <div style="position:absolute; bottom:8px; right:-1px; transform:translateX(100%); background:#0d1117; border:1px solid #388bfd; border-radius:0 4px 4px 0; padding:2px 8px; white-space:nowrap;">
+            <span style="color:#58a6ff; font-size:8px; letter-spacing:.05em;">LEFT SIDEBAR ← ext</span>
+          </div>
+        </div>
+
+        <!-- CANVAS AREA -->
+        <div style="flex:1; background:#0d1117; display:flex; flex-direction:column; overflow:hidden; min-width:0; position:relative;">
+          <!-- Canvas content placeholder -->
+          <div style="flex:1; display:flex; align-items:center; justify-content:center; border:1.5px dashed #3fb950; margin:8px; border-radius:6px; flex-direction:column; gap:6px;">
+            <div style="font-size:11px; color:#3fb950; font-weight:700;">CANVAS AREA</div>
+            <div style="font-size:9px; color:#8b949e; text-align:center; max-width:140px; line-height:1.5;">Extension-defined. Renders whatever the active extension contributes here.</div>
+            <div style="font-size:9px; color:#3fb950; opacity:0.7;">← ext: amplifier-canvas →</div>
+          </div>
+          <!-- Label -->
+          <div style="position:absolute; top:12px; left:12px; background:#0d1117; border:1px solid #3fb950; border-radius:4px; padding:2px 8px;">
+            <span style="color:#3fb950; font-size:8px; letter-spacing:.05em;">CANVAS AREA ← ext</span>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <div style="width:160px; background:#161b22; border-left:1px solid #21262d; display:flex; flex-direction:column; flex-shrink:0; position:relative; overflow:hidden;">
+          <div style="padding:6px 8px; border-bottom:1px solid #21262d; color:#8b949e; font-size:9px; text-transform:uppercase; letter-spacing:.06em;">PROPERTIES</div>
+          <div style="flex:1; padding:8px; display:flex; flex-direction:column; gap:6px;">
+            <div style="background:#21262d; border-radius:3px; padding:4px 6px; font-size:9px; color:#8b949e;">Width: 100%</div>
+            <div style="background:#21262d; border-radius:3px; padding:4px 6px; font-size:9px; color:#8b949e;">Data: API</div>
+            <div style="background:#21262d; border-radius:3px; padding:4px 6px; font-size:9px; color:#8b949e;">Refresh: 5s</div>
+          </div>
+          <div style="font-size:8px; color:#6e7681; padding:6px 8px; border-top:1px solid #21262d; font-style:italic;">optional — ext or shell</div>
+          <div style="position:absolute; bottom:30px; left:-1px; transform:translateX(-100%); background:#0d1117; border:1px solid #388bfd; border-radius:4px 0 0 4px; padding:2px 8px; white-space:nowrap;">
+            <span style="color:#58a6ff; font-size:8px; letter-spacing:.05em;">RIGHT SIDEBAR ← ext</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM PANEL -->
+      <div style="height:90px; background:#161b22; border-top:1px solid #21262d; display:flex; flex-direction:column; flex-shrink:0; position:relative; overflow:hidden;">
+        <!-- Panel tabs -->
+        <div style="display:flex; padding:0 8px; border-bottom:1px solid #21262d; background:#0d1117;">
+          <div style="padding:3px 12px; color:#c9d1d9; font-size:9px; border-bottom:1.5px solid #388bfd;">TERMINAL</div>
+          <div style="padding:3px 12px; color:#6e7681; font-size:9px;">OUTPUT</div>
+          <div style="padding:3px 12px; color:#6e7681; font-size:9px;">PROBLEMS</div>
+          <div style="padding:3px 12px; color:#6e7681; font-size:9px;">+ ext panel</div>
+        </div>
+        <div style="flex:1; padding:6px 10px; font-size:9px; color:#3fb950; font-family:monospace;">
+          $ amplifier run "add auth"<br/>
+          <span style="color:#8b949e;">→ session-1 started...</span>
+        </div>
+        <div style="position:absolute; right:12px; top:8px; background:#0d1117; border:1px solid #388bfd; border-radius:4px; padding:2px 8px;">
+          <span style="color:#58a6ff; font-size:8px; letter-spacing:.05em;">BOTTOM PANEL ← ext</span>
+        </div>
+      </div>
+
+      <!-- STATUS BAR -->
+      <div style="height:20px; background:#1c4b9b; display:flex; align-items:center; padding:0 10px; gap:12px; flex-shrink:0; position:relative;">
+        <span style="font-size:9px; color:#cce5ff;">⎇ main</span>
+        <span style="font-size:9px; color:#cce5ff;">● 1 running</span>
+        <span style="flex:1;"></span>
+        <span style="font-size:9px; color:#cce5ff;">ext-amplifier-canvas v0.1</span>
+        <span style="font-size:9px; color:#cce5ff;">ready</span>
+        <div style="position:absolute; top:-1px; left:50%; transform:translateX(-50%); background:#0d1117; border:1px solid #388bfd; border-top:none; border-radius:0; padding:0 8px; display:none;">
+          <span style="color:#58a6ff; font-size:8px; letter-spacing:.05em;">STATUS BAR ← ext items</span>
+        </div>
+        <div style="position:absolute; top:-18px; left:100px; background:#0d1117; border:1px solid #388bfd; border-radius:4px; padding:1px 8px;">
+          <span style="color:#58a6ff; font-size:8px; letter-spacing:.05em;">STATUS BAR ← ext items</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px;">
+  <h3>Extension contribution summary</h3>
+  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; font-size:12px;">
+    <div style="background:#161b22; border-radius:6px; padding:10px; border:1px solid #30363d;">
+      <div style="color:#c9d1d9; font-weight:600; margin-bottom:4px;">activityRail</div>
+      <div style="color:#8b949e; font-size:11px;">Icon + associated sidebar view. Clicking activates the sidebar panel.</div>
+    </div>
+    <div style="background:#161b22; border-radius:6px; padding:10px; border:1px solid #30363d;">
+      <div style="color:#c9d1d9; font-weight:600; margin-bottom:4px;">sidebar</div>
+      <div style="color:#8b949e; font-size:11px;">Left panel content. Can be any React component — session list, file tree, anything.</div>
+    </div>
+    <div style="background:#1c2d1e; border-radius:6px; padding:10px; border:1px solid #3fb950;">
+      <div style="color:#3fb950; font-weight:600; margin-bottom:4px;">canvas ★</div>
+      <div style="color:#8b949e; font-size:11px;">The main content area. This is the extension's primary UI. One active at a time.</div>
+    </div>
+    <div style="background:#161b22; border-radius:6px; padding:10px; border:1px solid #30363d;">
+      <div style="color:#c9d1d9; font-weight:600; margin-bottom:4px;">rightSidebar</div>
+      <div style="color:#8b949e; font-size:11px;">Optional properties/context panel. Shell or extension can contribute. Collapsible.</div>
+    </div>
+    <div style="background:#161b22; border-radius:6px; padding:10px; border:1px solid #30363d;">
+      <div style="color:#c9d1d9; font-weight:600; margin-bottom:4px;">panel</div>
+      <div style="color:#8b949e; font-size:11px;">Bottom panel tab. Terminal, output, logs — multiple tabs, multiple contributors.</div>
+    </div>
+    <div style="background:#161b22; border-radius:6px; padding:10px; border:1px solid #30363d;">
+      <div style="color:#c9d1d9; font-weight:600; margin-bottom:4px;">statusBar</div>
+      <div style="color:#8b949e; font-size:11px;">Left or right-aligned status items. Small — icons + short text only.</div>
+    </div>
+  </div>
+</div>

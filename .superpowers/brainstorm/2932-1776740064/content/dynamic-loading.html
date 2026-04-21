@@ -1,0 +1,106 @@
+<h2>Section 3 (cont.) — Dynamic Loading</h2>
+<p class="subtitle">Extensions load and reload at runtime. No restart required — for installs or for dev edits.</p>
+
+<div class="section">
+  <h3>The reactive heart: ExtensionRegistry</h3>
+  <div class="mockup">
+    <div class="mockup-header">Shell's central registry — a Zustand store the entire UI watches</div>
+    <div class="mockup-body">
+<pre style="margin:0; font-family:'Menlo','Monaco',monospace; font-size:12px; line-height:1.7; color:#c9d1d9;">
+// When registry changes, React re-renders the shell automatically.
+// No manual wiring. No restart.
+
+ExtensionRegistry = {
+  extensions: {
+    'amplifier-canvas': { manifest, status: 'active' },
+    'git-panel':        { manifest, status: 'active' },
+    'new-ext':          { manifest, status: 'loading' },  // ← appears live
+  }
+}
+</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Two dynamic paths</h3>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+    <!-- Install path -->
+    <div>
+      <div class="label" style="margin-bottom:8px;">Install from npm — no restart</div>
+      <div style="display:flex; flex-direction:column; gap:4px; font-size:12px;">
+        <div style="padding:8px 12px; background:#161b22; border:1px solid #30363d; border-radius:6px; border-left:3px solid #58a6ff;">
+          <strong style="color:#c9d1d9;">1. User runs</strong>
+          <pre style="margin:4px 0 0; font-size:11px; color:#8b949e;">core-shell install @myorg/my-ext</pre>
+        </div>
+        <div style="text-align:center; color:#58a6ff; font-size:16px;">↓</div>
+        <div style="padding:8px 12px; background:#161b22; border:1px solid #30363d; border-radius:6px; border-left:3px solid #58a6ff;">
+          <strong style="color:#c9d1d9;">2. Main process</strong>
+          <div style="color:#8b949e; margin-top:2px; font-size:11px;">Runs <code>npm install</code>, then sends <code>extension:installed</code> IPC event to renderer</div>
+        </div>
+        <div style="text-align:center; color:#58a6ff; font-size:16px;">↓</div>
+        <div style="padding:8px 12px; background:#161b22; border:1px solid #30363d; border-radius:6px; border-left:3px solid #58a6ff;">
+          <strong style="color:#c9d1d9;">3. Renderer</strong>
+          <div style="color:#8b949e; margin-top:2px; font-size:11px;">Dynamic <code>import(extensionPath)</code>, reads manifest, adds to ExtensionRegistry</div>
+        </div>
+        <div style="text-align:center; color:#3fb950; font-size:16px;">↓</div>
+        <div style="padding:8px 12px; background:#1c2d1e; border:1.5px solid #3fb950; border-radius:6px;">
+          <strong style="color:#3fb950;">4. Live — activity icon appears, canvas available</strong>
+          <div style="color:#8b949e; margin-top:2px; font-size:11px;">React re-renders shell. No restart.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dev hot-reload path -->
+    <div>
+      <div class="label" style="margin-bottom:8px;">Dev hot-reload — edit → live in ~1s</div>
+      <div style="display:flex; flex-direction:column; gap:4px; font-size:12px;">
+        <div style="padding:8px 12px; background:#161b22; border:1px solid #30363d; border-radius:6px; border-left:3px solid #d2a8ff;">
+          <strong style="color:#c9d1d9;">1. You edit a file</strong>
+          <div style="color:#8b949e; margin-top:2px; font-size:11px;"><code>extensions/my-ext/Canvas.tsx</code> saved</div>
+        </div>
+        <div style="text-align:center; color:#d2a8ff; font-size:16px;">↓</div>
+        <div style="padding:8px 12px; background:#161b22; border:1px solid #30363d; border-radius:6px; border-left:3px solid #d2a8ff;">
+          <strong style="color:#c9d1d9;">2. chokidar detects change</strong>
+          <div style="color:#8b949e; margin-top:2px; font-size:11px;">Watching <code>extensions/</code>. Sends <code>extension:changed</code> IPC event.</div>
+        </div>
+        <div style="text-align:center; color:#d2a8ff; font-size:16px;">↓</div>
+        <div style="padding:8px 12px; background:#161b22; border:1px solid #30363d; border-radius:6px; border-left:3px solid #d2a8ff;">
+          <strong style="color:#c9d1d9;">3. Renderer hot-swaps</strong>
+          <div style="color:#8b949e; margin-top:2px; font-size:11px;">Unmounts old, <code>import(path + '?t=' + Date.now())</code> cache-busts, re-registers manifest</div>
+        </div>
+        <div style="text-align:center; color:#3fb950; font-size:16px;">↓</div>
+        <div style="padding:8px 12px; background:#1c2d1e; border:1.5px solid #3fb950; border-radius:6px;">
+          <strong style="color:#3fb950;">4. Live — your edit is visible</strong>
+          <div style="color:#8b949e; margin-top:2px; font-size:11px;">Extension state optionally preserved via <code>serialize/restore</code> hooks.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <h3>Extension lifecycle hooks (optional)</h3>
+  <div class="mockup">
+    <div class="mockup-header">extensions/my-ext/index.tsx — optional lifecycle</div>
+    <div class="mockup-body">
+<pre style="margin:0; font-family:'Menlo','Monaco',monospace; font-size:12px; line-height:1.7; color:#c9d1d9;">
+export const manifest = {
+  id: 'my-ext',
+  // ... contributes ...
+
+  // Optional — called before unload (for hot-reload state preservation)
+  onBeforeUnload: () =&gt; ({ savedState: myStore.getState() }),
+
+  // Optional — called after reload with saved state
+  onAfterLoad: (ctx) =&gt; {
+    if (ctx.previousState) myStore.setState(ctx.previousState)
+  },
+}
+</pre>
+    </div>
+  </div>
+</div>

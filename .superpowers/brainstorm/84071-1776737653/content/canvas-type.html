@@ -1,0 +1,149 @@
+<h2>What kind of canvas lives inside the shell?</h2>
+<p class="subtitle">VS Code has an "editor area" — what goes in that slot in your platform?</p>
+
+<div class="cards" style="grid-template-columns: repeat(2, 1fr); gap: 20px;">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117; padding:14px; min-height:130px; display:flex; align-items:center; justify-content:center; border-radius:6px; overflow:hidden; position:relative;">
+      <!-- Infinite canvas mockup -->
+      <div style="position:relative; width:100%; height:110px; overflow:hidden;">
+        <!-- grid dots -->
+        <div style="position:absolute;inset:0;background-image:radial-gradient(circle,#30363d 1px,transparent 1px);background-size:16px 16px;"></div>
+        <!-- sticky notes -->
+        <div style="position:absolute;top:12px;left:20px;background:#f9e784;color:#1a1a1a;padding:6px 8px;font-size:9px;font-weight:600;border-radius:2px;box-shadow:2px 2px 4px rgba(0,0,0,0.4);transform:rotate(-2deg);">Idea A</div>
+        <div style="position:absolute;top:30px;left:110px;background:#84c5f9;color:#1a1a1a;padding:6px 8px;font-size:9px;font-weight:600;border-radius:2px;box-shadow:2px 2px 4px rgba(0,0,0,0.4);transform:rotate(1deg);">Idea B</div>
+        <div style="position:absolute;top:65px;left:55px;background:#a8f0c8;color:#1a1a1a;padding:6px 8px;font-size:9px;font-weight:600;border-radius:2px;box-shadow:2px 2px 4px rgba(0,0,0,0.4);">Note</div>
+        <div style="position:absolute;top:15px;left:185px;background:#f9a884;color:#1a1a1a;padding:6px 8px;font-size:9px;font-weight:600;border-radius:2px;box-shadow:2px 2px 4px rgba(0,0,0,0.4);transform:rotate(-1deg);">Cluster</div>
+        <!-- a rough circle/shape -->
+        <div style="position:absolute;top:50px;left:160px;width:55px;height:40px;border:2px dashed #58a6ff;border-radius:50%;opacity:0.6;"></div>
+        <!-- pan controls -->
+        <div style="position:absolute;bottom:6px;right:8px;display:flex;gap:3px;">
+          <div style="width:18px;height:18px;background:#21262d;border:1px solid #30363d;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#8b949e;">+</div>
+          <div style="width:18px;height:18px;background:#21262d;border:1px solid #30363d;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#8b949e;">−</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Infinite Spatial Canvas</h3>
+      <p>Pan, zoom, freeform placement. The canvas is boundless — users move around it freely. <em>Think: Miro, FigJam, Excalidraw.</em></p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117; padding:14px; min-height:130px; display:flex; align-items:center; justify-content:center; border-radius:6px; overflow:hidden;">
+      <!-- Workflow / node graph mockup -->
+      <div style="position:relative; width:100%; height:110px; overflow:hidden;">
+        <div style="position:absolute;inset:0;background-image:radial-gradient(circle,#30363d 1px,transparent 1px);background-size:16px 16px;"></div>
+        <!-- nodes -->
+        <div style="position:absolute;top:10px;left:10px;background:#21262d;border:1.5px solid #388bfd;border-radius:6px;padding:5px 10px;font-size:9px;color:#c9d1d9;font-weight:600;white-space:nowrap;">HTTP Trigger</div>
+        <div style="position:absolute;top:10px;left:120px;background:#21262d;border:1.5px solid #3fb950;border-radius:6px;padding:5px 10px;font-size:9px;color:#c9d1d9;font-weight:600;white-space:nowrap;">Filter</div>
+        <div style="position:absolute;top:10px;left:200px;background:#21262d;border:1.5px solid #d2a8ff;border-radius:6px;padding:5px 10px;font-size:9px;color:#c9d1d9;font-weight:600;white-space:nowrap;">Transform</div>
+        <div style="position:absolute;top:68px;left:65px;background:#21262d;border:1.5px solid #f0883e;border-radius:6px;padding:5px 10px;font-size:9px;color:#c9d1d9;font-weight:600;white-space:nowrap;">Error Handler</div>
+        <div style="position:absolute;top:68px;left:195px;background:#21262d;border:1.5px solid #3fb950;border-radius:6px;padding:5px 10px;font-size:9px;color:#c9d1d9;font-weight:600;white-space:nowrap;">Output</div>
+        <!-- SVG arrows -->
+        <svg style="position:absolute;inset:0;width:100%;height:100%;overflow:visible;" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#58a6ff" opacity="0.7"/></marker></defs>
+          <!-- trigger → filter -->
+          <line x1="78" y1="22" x2="118" y2="22" stroke="#58a6ff" stroke-width="1.5" opacity="0.7" marker-end="url(#arr)"/>
+          <!-- filter → transform -->
+          <line x1="157" y1="22" x2="198" y2="22" stroke="#58a6ff" stroke-width="1.5" opacity="0.7" marker-end="url(#arr)"/>
+          <!-- filter → error -->
+          <line x1="137" y1="33" x2="110" y2="68" stroke="#f0883e" stroke-width="1.5" opacity="0.5" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+          <!-- transform → output -->
+          <line x1="246" y1="33" x2="220" y2="68" stroke="#58a6ff" stroke-width="1.5" opacity="0.7" marker-end="url(#arr)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Workflow / Node Graph Canvas</h3>
+      <p>Connected nodes and edges. Logic flows between blocks. <em>Think: n8n, Zapier, Comfy UI, Node-RED.</em></p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117; padding:14px; min-height:130px; display:flex; align-items:center; justify-content:center; border-radius:6px; overflow:hidden;">
+      <!-- Structured drag-drop builder -->
+      <div style="position:relative; width:100%; height:110px; display:flex; gap:8px;">
+        <!-- Component palette -->
+        <div style="width:70px;background:#161b22;border-radius:4px;border:1px solid #30363d;padding:6px;flex-shrink:0;">
+          <div style="font-size:7px;color:#8b949e;text-transform:uppercase;font-weight:600;margin-bottom:6px;">Components</div>
+          <div style="background:#21262d;border:1px solid #30363d;border-radius:3px;padding:3px 5px;font-size:8px;color:#c9d1d9;margin-bottom:3px;">Button</div>
+          <div style="background:#21262d;border:1px solid #30363d;border-radius:3px;padding:3px 5px;font-size:8px;color:#c9d1d9;margin-bottom:3px;">Text Input</div>
+          <div style="background:#21262d;border:1px solid #30363d;border-radius:3px;padding:3px 5px;font-size:8px;color:#c9d1d9;margin-bottom:3px;">Table</div>
+          <div style="background:#21262d;border:1px solid #30363d;border-radius:3px;padding:3px 5px;font-size:8px;color:#c9d1d9;">Chart</div>
+        </div>
+        <!-- Canvas drop area -->
+        <div style="flex:1;background:#161b22;border-radius:4px;border:1.5px dashed #388bfd;padding:6px;position:relative;">
+          <div style="font-size:7px;color:#8b949e;text-transform:uppercase;font-weight:600;margin-bottom:4px;">Canvas</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+            <div style="background:#21262d;border:1px solid #3fb950;border-radius:3px;padding:4px 6px;font-size:8px;color:#3fb950;">📊 Revenue Chart</div>
+            <div style="background:#21262d;border:1px solid #3fb950;border-radius:3px;padding:4px 6px;font-size:8px;color:#3fb950;">🔢 KPI Card</div>
+            <div style="background:#21262d;border:1px solid #3fb950;border-radius:3px;padding:4px 6px;font-size:8px;color:#3fb950;grid-column:1/-1;">📋 Data Table</div>
+          </div>
+        </div>
+        <!-- Properties panel -->
+        <div style="width:65px;background:#161b22;border-radius:4px;border:1px solid #30363d;padding:6px;flex-shrink:0;">
+          <div style="font-size:7px;color:#8b949e;text-transform:uppercase;font-weight:600;margin-bottom:6px;">Properties</div>
+          <div style="font-size:7px;color:#8b949e;margin-bottom:2px;">Width</div>
+          <div style="background:#21262d;border:1px solid #30363d;border-radius:2px;padding:2px 4px;font-size:8px;color:#c9d1d9;margin-bottom:4px;">100%</div>
+          <div style="font-size:7px;color:#8b949e;margin-bottom:2px;">Data Source</div>
+          <div style="background:#21262d;border:1px solid #30363d;border-radius:2px;padding:2px 4px;font-size:8px;color:#c9d1d9;">API</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Structured Builder Canvas</h3>
+      <p>Drag components into a layout grid. Properties panel on the right. <em>Think: Power Apps, Retool, Webflow.</em></p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d1117; padding:14px; min-height:130px; display:flex; align-items:center; justify-content:center; border-radius:6px; overflow:hidden;">
+      <!-- Extension-defined canvas -->
+      <div style="position:relative; width:100%; height:110px;">
+        <!-- Shell chrome -->
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;">
+          <!-- Activity rail -->
+          <div style="display:flex;flex:1;overflow:hidden;">
+            <div style="width:36px;background:#161b22;border-right:1px solid #30363d;display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0;">
+              <div style="width:22px;height:22px;background:#388bfd;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;">🗂</div>
+              <div style="width:22px;height:22px;background:#21262d;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;">🔀</div>
+              <div style="width:22px;height:22px;background:#21262d;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;">🧩</div>
+            </div>
+            <!-- Tab area with different canvas types -->
+            <div style="flex:1;display:flex;flex-direction:column;">
+              <div style="display:flex;background:#161b22;border-bottom:1px solid #30363d;">
+                <div style="padding:3px 10px;background:#0d1117;border-top:1.5px solid #388bfd;font-size:8px;color:#c9d1d9;">my-flow.wf</div>
+                <div style="padding:3px 10px;font-size:8px;color:#8b949e;">board.canvas</div>
+                <div style="padding:3px 10px;font-size:8px;color:#8b949e;">dashboard.ui</div>
+              </div>
+              <!-- workflow canvas shown -->
+              <div style="flex:1;background:#0d1117;padding:6px;position:relative;">
+                <div style="position:absolute;top:8px;left:8px;font-size:7px;color:#58a6ff;opacity:0.7;font-style:italic;">← workflow canvas (ext: flowmaker)</div>
+                <div style="margin-top:14px;display:flex;gap:6px;align-items:center;">
+                  <div style="background:#21262d;border:1px solid #3fb950;border-radius:4px;padding:3px 6px;font-size:8px;color:#c9d1d9;">Start</div>
+                  <div style="font-size:10px;color:#58a6ff;">→</div>
+                  <div style="background:#21262d;border:1px solid #388bfd;border-radius:4px;padding:3px 6px;font-size:8px;color:#c9d1d9;">Process</div>
+                  <div style="font-size:10px;color:#58a6ff;">→</div>
+                  <div style="background:#21262d;border:1px solid #d2a8ff;border-radius:4px;padding:3px 6px;font-size:8px;color:#c9d1d9;">End</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Status bar -->
+          <div style="height:14px;background:#1c4b9b;display:flex;align-items:center;padding:0 8px;gap:8px;">
+            <span style="font-size:7px;color:#cce5ff;">flowmaker v1.2</span>
+            <span style="font-size:7px;color:#cce5ff;">3 nodes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>D — Shell Is the Platform, Canvas Is an Extension</h3>
+      <p>The shell hosts any canvas type. Each extension brings its own. Multiple canvas types coexist via tabs. The shell itself stays canvas-agnostic.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">You can pick more than one if your vision combines types — e.g. D + A, where the shell is extensible but ships with a spatial canvas built-in.</p>

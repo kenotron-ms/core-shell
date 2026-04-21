@@ -1,0 +1,98 @@
+<h2>Section 5 — Error Handling</h2>
+<p class="subtitle">Extensions crash in their lane. The shell and every other extension keep running.</p>
+
+<div class="section">
+  <h3>What an extension crash looks like</h3>
+  <div class="mockup">
+    <div class="mockup-header">Shell with one crashed canvas — everything else unaffected</div>
+    <div class="mockup-body" style="padding:0;">
+      <div style="display:flex; height:260px; font-size:11px; font-family:monospace;">
+
+        <!-- Activity rail -->
+        <div style="width:44px; background:#161b22; border-right:1px solid #21262d; display:flex; flex-direction:column; align-items:center; padding:6px 0; gap:4px;">
+          <div style="width:30px;height:30px;background:#21262d;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;border:1.5px solid #388bfd;">🗂</div>
+          <div style="width:30px;height:30px;background:transparent;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;position:relative;">
+            🧩
+            <div style="position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#f85149;border:1.5px solid #0d1117;"></div>
+          </div>
+        </div>
+
+        <!-- Sidebar — working fine -->
+        <div style="width:160px; background:#161b22; border-right:1px solid #21262d; padding:6px;">
+          <div style="color:#8b949e; font-size:9px; text-transform:uppercase; margin-bottom:6px; letter-spacing:.05em;">Sessions</div>
+          <div style="padding:3px 6px; background:#21262d; border-radius:3px; margin-bottom:2px; color:#c9d1d9; font-size:9px; display:flex; align-items:center; gap:4px;"><span style="width:5px;height:5px;border-radius:50%;background:#3fb950;display:inline-block;"></span>session-1</div>
+          <div style="padding:3px 6px; color:#6e7681; font-size:9px; display:flex; align-items:center; gap:4px;"><span style="width:5px;height:5px;border-radius:50%;background:#8b949e;display:inline-block;"></span>session-2</div>
+          <div style="margin-top:6px; padding:4px 6px; background:#1c2d1e; border-radius:3px; font-size:9px; color:#3fb950;">✓ Sidebar: working</div>
+        </div>
+
+        <!-- Canvas — ERROR STATE -->
+        <div style="flex:1; background:#0d1117; display:flex; align-items:center; justify-content:center; border:1.5px solid #f85149; margin:8px; border-radius:6px;">
+          <div style="text-align:center; padding:20px;">
+            <div style="font-size:24px; margin-bottom:8px;">⚠️</div>
+            <div style="color:#f85149; font-weight:700; font-size:12px; margin-bottom:4px;">Extension crashed</div>
+            <div style="color:#8b949e; font-size:10px; margin-bottom:12px;">amplifier-canvas · TypeError: Cannot read property<br/>'sessions' of undefined</div>
+            <div style="display:flex; gap:8px; justify-content:center;">
+              <button style="padding:5px 12px; background:#21262d; border:1px solid #30363d; border-radius:4px; color:#c9d1d9; font-size:10px; cursor:pointer;">View details</button>
+              <button style="padding:5px 12px; background:#1c2d1e; border:1px solid #3fb950; border-radius:4px; color:#3fb950; font-size:10px; cursor:pointer;">↺ Reload extension</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right sidebar — working fine -->
+        <div style="width:120px; background:#161b22; border-left:1px solid #21262d; padding:6px;">
+          <div style="color:#8b949e; font-size:9px; text-transform:uppercase; margin-bottom:6px; letter-spacing:.05em;">Properties</div>
+          <div style="padding:3px 6px; background:#21262d; border-radius:3px; margin-bottom:2px; color:#6e7681; font-size:9px;">Width: 100%</div>
+          <div style="margin-top:6px; padding:4px 6px; background:#1c2d1e; border-radius:3px; font-size:9px; color:#3fb950;">✓ Still working</div>
+        </div>
+
+      </div>
+
+      <!-- Bottom panel — working fine -->
+      <div style="height:52px; background:#161b22; border-top:1px solid #21262d; display:flex; flex-direction:column;">
+        <div style="display:flex; padding:0 8px; background:#0d1117; border-bottom:1px solid #21262d;">
+          <div style="padding:2px 10px; color:#c9d1d9; font-size:9px; border-bottom:1.5px solid #388bfd;">TERMINAL</div>
+        </div>
+        <div style="padding:4px 10px; font-size:9px; color:#3fb950;">$ <span style="color:#8b949e;">✓ Panel: working — terminal unaffected</span></div>
+      </div>
+
+      <!-- Status bar — working fine -->
+      <div style="height:18px; background:#1c4b9b; display:flex; align-items:center; padding:0 10px; gap:10px;">
+        <span style="font-size:9px; color:#cce5ff;">⎇ main</span>
+        <span style="font-size:9px; color:#ffa07a;">⚠ amplifier-canvas errored</span>
+        <span style="flex:1;"></span>
+        <span style="font-size:9px; color:#cce5ff;">✓ shell running</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>All four failure modes — and their recovery</h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;">
+
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px; border-left:3px solid #f85149;">
+      <div style="font-weight:700; color:#c9d1d9; margin-bottom:4px;">Runtime crash (render error)</div>
+      <div style="color:#8b949e; line-height:1.5; margin-bottom:8px;">Extension throws during React render or event handler.</div>
+      <div style="font-size:11px; color:#3fb950;">→ Error boundary catches it. Slot shows error UI. Status bar item turns amber. "Reload Extension" button re-runs dynamic import with cache-bust.</div>
+    </div>
+
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px; border-left:3px solid #f0883e;">
+      <div style="font-weight:700; color:#c9d1d9; margin-bottom:4px;">Load failure (bad manifest)</div>
+      <div style="color:#8b949e; line-height:1.5; margin-bottom:8px;">Extension's <code style="background:#21262d; padding:1px 3px; border-radius:2px;">index.tsx</code> throws on import, or manifest is missing required fields.</div>
+      <div style="font-size:11px; color:#3fb950;">→ Extension skipped in registry. Activity rail icon shows ⚠️. Error surfaced in a "Failed extensions" section of the command palette.</div>
+    </div>
+
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px; border-left:3px solid #d2a8ff;">
+      <div style="font-weight:700; color:#c9d1d9; margin-bottom:4px;">IPC timeout</div>
+      <div style="color:#8b949e; line-height:1.5; margin-bottom:8px;">Main process doesn't respond to an IPC call within 10s (frozen, busy).</div>
+      <div style="font-size:11px; color:#3fb950;">→ <code style="background:#21262d; padding:1px 3px; border-radius:2px;">shell.ipc.*</code> rejects with a typed <code style="background:#21262d; padding:1px 3px; border-radius:2px;">IPCTimeoutError</code>. Extension handles it. No silent hang.</div>
+    </div>
+
+    <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px; border-left:3px solid #58a6ff;">
+      <div style="font-weight:700; color:#c9d1d9; margin-bottom:4px;">Renderer crash (rare)</div>
+      <div style="color:#8b949e; line-height:1.5; margin-bottom:8px;">Entire Chromium renderer process crashes (memory, native crash).</div>
+      <div style="font-size:11px; color:#3fb950;">→ Electron automatically relaunches the renderer. Shell restores previous layout and re-discovers extensions. Extension stores rehydrated from disk.</div>
+    </div>
+
+  </div>
+</div>

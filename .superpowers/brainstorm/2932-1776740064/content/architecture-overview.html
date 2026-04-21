@@ -1,0 +1,99 @@
+<h2>Section 1 — Architecture Overview</h2>
+<p class="subtitle">The two layers: the shell (permanent) and the extensions (pluggable). Does this match your mental model?</p>
+
+<div class="mockup">
+  <div class="mockup-header">core-shell process architecture</div>
+  <div class="mockup-body" style="padding:20px; font-family:monospace; font-size:12px; background:#0d1117;">
+
+    <!-- Two process boxes -->
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+
+      <!-- Main Process -->
+      <div style="flex:0 0 200px; border:1.5px solid #f0883e; border-radius:8px; padding:12px; background:#1a1008;">
+        <div style="color:#f0883e; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;">Main Process (Node.js)</div>
+        <div style="display:flex; flex-direction:column; gap:5px;">
+          <div style="background:#21262d; border:1px solid #30363d; border-radius:4px; padding:4px 8px; color:#c9d1d9; font-size:10px;">Window management</div>
+          <div style="background:#21262d; border:1px solid #30363d; border-radius:4px; padding:4px 8px; color:#c9d1d9; font-size:10px;">File system (Node APIs)</div>
+          <div style="background:#21262d; border:1px solid #30363d; border-radius:4px; padding:4px 8px; color:#c9d1d9; font-size:10px;">Extension loader</div>
+          <div style="background:#21262d; border:1px solid #30363d; border-radius:4px; padding:4px 8px; color:#c9d1d9; font-size:10px;">Native menus / tray</div>
+          <div style="background:#21262d; border:1px solid #30363d; border-radius:4px; padding:4px 8px; color:#c9d1d9; font-size:10px;">IPC handlers</div>
+        </div>
+        <div style="margin-top:8px; font-size:9px; color:#8b949e; font-style:italic;">Never imports React.<br/>Never touches the DOM.</div>
+      </div>
+
+      <!-- IPC arrow -->
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding-top:40px; gap:4px; flex:0 0 60px;">
+        <div style="font-size:10px; color:#8b949e; text-align:center; line-height:1.4;">contextBridge<br/>preload.ts</div>
+        <div style="font-size:18px; color:#58a6ff;">⇄</div>
+        <div style="font-size:9px; color:#8b949e; text-align:center;">typed IPC<br/>contract</div>
+      </div>
+
+      <!-- Renderer Process -->
+      <div style="flex:1; border:1.5px solid #58a6ff; border-radius:8px; padding:12px; background:#0d1a2d;">
+        <div style="color:#58a6ff; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;">Renderer Process (Chromium + React)</div>
+
+        <!-- Shell chrome band -->
+        <div style="border:1px dashed #388bfd; border-radius:6px; padding:8px; margin-bottom:8px; background:#0d1117;">
+          <div style="font-size:9px; color:#388bfd; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px;">Shell Chrome (permanent — never changes)</div>
+          <div style="display:flex; gap:4px; flex-wrap:wrap;">
+            <div style="background:#161b22; border:1px solid #388bfd; border-radius:3px; padding:3px 7px; font-size:9px; color:#79c0ff;">Activity Rail</div>
+            <div style="background:#161b22; border:1px solid #388bfd; border-radius:3px; padding:3px 7px; font-size:9px; color:#79c0ff;">Tab Bar</div>
+            <div style="background:#161b22; border:1px solid #388bfd; border-radius:3px; padding:3px 7px; font-size:9px; color:#79c0ff;">Layout Engine</div>
+            <div style="background:#161b22; border:1px solid #388bfd; border-radius:3px; padding:3px 7px; font-size:9px; color:#79c0ff;">Command Palette</div>
+            <div style="background:#161b22; border:1px solid #388bfd; border-radius:3px; padding:3px 7px; font-size:9px; color:#79c0ff;">Zustand Store</div>
+          </div>
+        </div>
+
+        <!-- Extension slots band -->
+        <div style="border:1px dashed #3fb950; border-radius:6px; padding:8px; background:#0d1117;">
+          <div style="font-size:9px; color:#3fb950; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px;">Extension Slots (filled at runtime by extensions)</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+            <div style="background:#1c2d1e; border:1px solid #3fb950; border-radius:3px; padding:4px 7px; font-size:9px;">
+              <span style="color:#3fb950;">sidebar</span><br/>
+              <span style="color:#8b949e; font-size:8px;">← ext: amplifier-canvas</span>
+            </div>
+            <div style="background:#1c2d1e; border:1px solid #3fb950; border-radius:3px; padding:4px 7px; font-size:9px;">
+              <span style="color:#3fb950;">canvas</span><br/>
+              <span style="color:#8b949e; font-size:8px;">← ext: amplifier-canvas</span>
+            </div>
+            <div style="background:#1c2d1e; border:1px solid #3fb950; border-radius:3px; padding:4px 7px; font-size:9px;">
+              <span style="color:#3fb950;">panel</span><br/>
+              <span style="color:#8b949e; font-size:8px;">← ext: any</span>
+            </div>
+            <div style="background:#1c2d1e; border:1px solid #3fb950; border-radius:3px; padding:4px 7px; font-size:9px;">
+              <span style="color:#3fb950;">statusBar items</span><br/>
+              <span style="color:#8b949e; font-size:8px;">← ext: any</span>
+            </div>
+            <div style="background:#1c2d1e; border:1px solid #3fb950; border-radius:3px; padding:4px 7px; font-size:9px; grid-column:1/-1;">
+              <span style="color:#3fb950;">activityRail icons</span><br/>
+              <span style="color:#8b949e; font-size:8px;">← each ext can register an icon + view</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Extension packages row -->
+    <div style="margin-top:16px; border-top:1px solid #21262d; padding-top:14px;">
+      <div style="font-size:9px; color:#8b949e; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;">Installed extensions (loaded from extensions/ dir on startup)</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <div style="border:1px solid #3fb950; border-radius:5px; padding:6px 10px; background:#1c2d1e;">
+          <div style="font-size:10px; color:#3fb950; font-weight:600;">ext-amplifier-canvas</div>
+          <div style="font-size:9px; color:#8b949e; margin-top:2px;">contributes: sidebar, canvas, activityIcon</div>
+        </div>
+        <div style="border:1px solid #30363d; border-radius:5px; padding:6px 10px; background:#161b22; opacity:0.7;">
+          <div style="font-size:10px; color:#8b949e; font-weight:600;">ext-git-panel</div>
+          <div style="font-size:9px; color:#8b949e; margin-top:2px;">contributes: panel, statusBarItem</div>
+        </div>
+        <div style="border:1px dashed #30363d; border-radius:5px; padding:6px 10px; background:#0d1117; opacity:0.5;">
+          <div style="font-size:10px; color:#6e7681; font-weight:600;">+ your next extension</div>
+          <div style="font-size:9px; color:#6e7681; margin-top:2px;">drop folder → restart → done</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px;">The shell chrome never changes. Extensions fill the named slots. Adding a new canvas is: create folder, export manifest + components, restart.</p>

@@ -1,0 +1,143 @@
+<h2>Section 4 — State & Data Flow</h2>
+<p class="subtitle">Three state layers, one IPC bridge. Data always flows in one direction.</p>
+
+<div class="section">
+  <h3>State layers</h3>
+  <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+
+    <div style="display:flex; gap:12px; align-items:stretch;">
+      <div style="width:120px; flex-shrink:0; display:flex; align-items:center; justify-content:flex-end; padding-right:8px;">
+        <span style="color:#8b949e; font-size:11px; text-align:right; line-height:1.4;">Shell owns<br/>all users</span>
+      </div>
+      <div style="flex:1; background:#1c2d3a; border:1.5px solid #58a6ff; border-radius:8px; padding:12px;">
+        <div style="color:#58a6ff; font-weight:700; margin-bottom:8px;">Shell Store (Zustand) — global, shell-owned</div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px;">
+          <div style="background:#0d1a2d; border-radius:4px; padding:6px 8px;">
+            <div style="color:#c9d1d9; font-size:11px; font-weight:600;">activeExtension</div>
+            <div style="color:#8b949e; font-size:10px;">which canvas is showing</div>
+          </div>
+          <div style="background:#0d1a2d; border-radius:4px; padding:6px 8px;">
+            <div style="color:#c9d1d9; font-size:11px; font-weight:600;">extensionRegistry</div>
+            <div style="color:#8b949e; font-size:10px;">loaded, loading, errored</div>
+          </div>
+          <div style="background:#0d1a2d; border-radius:4px; padding:6px 8px;">
+            <div style="color:#c9d1d9; font-size:11px; font-weight:600;">layout</div>
+            <div style="color:#8b949e; font-size:10px;">sidebar width, panel height</div>
+          </div>
+          <div style="background:#0d1a2d; border-radius:4px; padding:6px 8px;">
+            <div style="color:#c9d1d9; font-size:11px; font-weight:600;">theme</div>
+            <div style="color:#8b949e; font-size:10px;">'light' | 'dark'</div>
+          </div>
+          <div style="background:#0d1a2d; border-radius:4px; padding:6px 8px;">
+            <div style="color:#c9d1d9; font-size:11px; font-weight:600;">commands</div>
+            <div style="color:#8b949e; font-size:10px;">palette registry</div>
+          </div>
+          <div style="background:#0d1a2d; border-radius:4px; padding:6px 8px;">
+            <div style="color:#c9d1d9; font-size:11px; font-weight:600;">tabs</div>
+            <div style="color:#8b949e; font-size:10px;">open tabs + order</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; align-items:stretch;">
+      <div style="width:120px; flex-shrink:0; display:flex; align-items:center; justify-content:flex-end; padding-right:8px;">
+        <span style="color:#8b949e; font-size:11px; text-align:right; line-height:1.4;">One per<br/>extension</span>
+      </div>
+      <div style="flex:1; background:#1c2d1e; border:1.5px solid #3fb950; border-radius:8px; padding:12px;">
+        <div style="color:#3fb950; font-weight:700; margin-bottom:8px;">Extension Stores (Zustand) — isolated, extension-owned</div>
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1; background:#0d1117; border-radius:4px; padding:8px 10px; border:1px solid #30363d;">
+            <div style="color:#c9d1d9; font-size:11px; font-weight:600; margin-bottom:4px;">amplifier-canvas store</div>
+            <div style="color:#8b949e; font-size:10px; line-height:1.6;">sessions: Session[]<br/>activeSessionId: string<br/>terminalInstances: Map</div>
+          </div>
+          <div style="flex:1; background:#0d1117; border-radius:4px; padding:8px 10px; border:1px solid #30363d;">
+            <div style="color:#c9d1d9; font-size:11px; font-weight:600; margin-bottom:4px;">git-panel store</div>
+            <div style="color:#8b949e; font-size:10px; line-height:1.6;">branch: string<br/>staged: string[]<br/>commits: Commit[]</div>
+          </div>
+          <div style="flex:1; background:#0d1117; border-radius:4px; padding:8px 10px; border:1px solid #21262d; opacity:0.5;">
+            <div style="color:#6e7681; font-size:11px; font-weight:600; margin-bottom:4px;">your-ext store</div>
+            <div style="color:#6e7681; font-size:10px; line-height:1.6;">whatever your<br/>extension needs</div>
+          </div>
+        </div>
+        <div style="margin-top:8px; font-size:10px; color:#8b949e;">Shell persists extension stores to disk keyed by extension ID. Extensions don't manage persistence themselves.</div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; align-items:stretch;">
+      <div style="width:120px; flex-shrink:0; display:flex; align-items:center; justify-content:flex-end; padding-right:8px;">
+        <span style="color:#8b949e; font-size:11px; text-align:right; line-height:1.4;">Main process<br/>only</span>
+      </div>
+      <div style="flex:1; background:#2d1a08; border:1.5px solid #f0883e; border-radius:8px; padding:12px;">
+        <div style="color:#f0883e; font-weight:700; margin-bottom:8px;">Main Process State — Node.js, never in renderer</div>
+        <div style="display:flex; gap:8px;">
+          <div style="background:#1a1008; border-radius:4px; padding:6px 10px; font-size:10px; color:#c9d1d9;">File watchers (chokidar)</div>
+          <div style="background:#1a1008; border-radius:4px; padding:6px 10px; font-size:10px; color:#c9d1d9;">PTY instances (node-pty)</div>
+          <div style="background:#1a1008; border-radius:4px; padding:6px 10px; font-size:10px; color:#c9d1d9;">IPC handler registry</div>
+          <div style="background:#1a1008; border-radius:4px; padding:6px 10px; font-size:10px; color:#c9d1d9;">npm subprocess</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <h3>Data flow — end to end example</h3>
+  <div style="font-size:12px; background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:16px;">
+    <div style="display:flex; align-items:flex-start; gap:0; position:relative;">
+
+      <div style="display:flex; flex-direction:column; gap:0; flex:1;">
+
+        <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 0;">
+          <div style="width:20px; height:20px; border-radius:50%; background:#f0883e; color:#0d1117; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">1</div>
+          <div>
+            <div style="color:#c9d1d9; font-weight:600;">Disk event</div>
+            <div style="color:#8b949e; margin-top:2px; line-height:1.5;"><code style="background:#161b22; padding:1px 4px; border-radius:3px; font-size:10px;">~/.amplifier/sessions/xyz/events.jsonl</code> appended by Amplifier CLI</div>
+          </div>
+        </div>
+
+        <div style="margin-left:10px; width:1px; height:12px; background:#30363d;"></div>
+
+        <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 0;">
+          <div style="width:20px; height:20px; border-radius:50%; background:#f0883e; color:#0d1117; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">2</div>
+          <div>
+            <div style="color:#c9d1d9; font-weight:600;">Main process — chokidar fires</div>
+            <div style="color:#8b949e; margin-top:2px; line-height:1.5;">Sends <code style="background:#161b22; padding:1px 4px; border-radius:3px; font-size:10px;">ipc:file-changed</code> event to renderer with path + new bytes</div>
+          </div>
+        </div>
+
+        <div style="margin-left:10px; width:1px; height:12px; background:#30363d;"></div>
+
+        <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 0;">
+          <div style="width:20px; height:20px; border-radius:50%; background:#3fb950; color:#0d1117; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">3</div>
+          <div>
+            <div style="color:#c9d1d9; font-weight:600;">Extension callback fires</div>
+            <div style="color:#8b949e; margin-top:2px; line-height:1.5;"><code style="background:#161b22; padding:1px 4px; border-radius:3px; font-size:10px;">shell.ipc.watchDir</code> callback in <code style="background:#161b22; padding:1px 4px; border-radius:3px; font-size:10px;">amplifier-canvas</code> receives the event</div>
+          </div>
+        </div>
+
+        <div style="margin-left:10px; width:1px; height:12px; background:#30363d;"></div>
+
+        <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 0;">
+          <div style="width:20px; height:20px; border-radius:50%; background:#3fb950; color:#0d1117; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">4</div>
+          <div>
+            <div style="color:#c9d1d9; font-weight:600;">Extension store updates</div>
+            <div style="color:#8b949e; margin-top:2px; line-height:1.5;"><code style="background:#161b22; padding:1px 4px; border-radius:3px; font-size:10px;">setState({ sessions: parsedSessions })</code> — Zustand notifies subscribers</div>
+          </div>
+        </div>
+
+        <div style="margin-left:10px; width:1px; height:12px; background:#30363d;"></div>
+
+        <div style="display:flex; align-items:flex-start; gap:10px; padding:8px 0;">
+          <div style="width:20px; height:20px; border-radius:50%; background:#58a6ff; color:#0d1117; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;">5</div>
+          <div>
+            <div style="color:#c9d1d9; font-weight:600;">React re-renders</div>
+            <div style="color:#8b949e; margin-top:2px; line-height:1.5;"><code style="background:#161b22; padding:1px 4px; border-radius:3px; font-size:10px;">Sidebar</code> component re-renders with new session list. User sees the update — no polling, no manual refresh.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

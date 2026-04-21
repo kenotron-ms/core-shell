@@ -1,0 +1,110 @@
+<h2>Section 3 (updated) — Extension as npm Package</h2>
+<p class="subtitle">Extensions are real packages. Proper deps, proper versioning, publishable to any registry.</p>
+
+<div class="section">
+  <h3>Three ways an extension lives in the shell</h3>
+  <div class="options" style="gap:12px;">
+
+    <div class="option" data-choice="local" onclick="toggleSelect(this)">
+      <div class="letter" style="font-size:16px;">📁</div>
+      <div class="content">
+        <h3>Local (dev)</h3>
+        <p>Drop a folder into <code>extensions/</code>. Has its own <code>package.json</code>. Shell discovers it on startup. No install step — instant iteration.</p>
+        <pre style="margin-top:8px; font-size:10px; background:#0d1117; padding:8px; border-radius:4px; color:#c9d1d9; overflow-x:auto;">extensions/
+└─ my-canvas/
+   ├─ package.json
+   ├─ index.tsx
+   └─ ...</pre>
+      </div>
+    </div>
+
+    <div class="option" data-choice="installed" onclick="toggleSelect(this)">
+      <div class="letter" style="font-size:16px;">📦</div>
+      <div class="content">
+        <h3>Installed (npm)</h3>
+        <p>Install any npm package that has <code>"core-shell-extension"</code> in its keywords. Shell discovers it in <code>node_modules/</code> automatically.</p>
+        <pre style="margin-top:8px; font-size:10px; background:#0d1117; padding:8px; border-radius:4px; color:#c9d1d9; overflow-x:auto;">npm install @myorg/amplifier-canvas
+# or: core-shell install @myorg/amplifier-canvas
+# → restart → it's there</pre>
+      </div>
+    </div>
+
+    <div class="option" data-choice="bundled" onclick="toggleSelect(this)">
+      <div class="letter" style="font-size:16px;">🏗</div>
+      <div class="content">
+        <h3>Bundled (first-party)</h3>
+        <p>Listed directly in shell's <code>package.json</code> as a workspace dep. Built together with the shell. Zero install step for end users — ships inside the app binary.</p>
+        <pre style="margin-top:8px; font-size:10px; background:#0d1117; padding:8px; border-radius:4px; color:#c9d1d9; overflow-x:auto;">// shell/package.json
+"workspaces": [
+  "packages/shell",
+  "packages/ext-amplifier-canvas"  ← bundled
+]</pre>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <h3>What the extension's package.json looks like</h3>
+  <div class="mockup">
+    <div class="mockup-header">packages/ext-amplifier-canvas/package.json</div>
+    <div class="mockup-body">
+<pre style="margin:0; font-family:'Menlo','Monaco',monospace; font-size:12px; line-height:1.7; color:#c9d1d9; overflow-x:auto;">
+{
+  "name": "@myorg/amplifier-canvas",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "keywords": ["core-shell-extension"],
+
+  "peerDependencies": {
+    "react": "^18",
+    "core-shell": "^1"
+  },
+
+  "dependencies": {
+    "@xterm/xterm": "^6.0.0",
+    "chokidar":     "^4.0.0"
+  },
+
+  "devDependencies": {
+    "vite": "^5",
+    "typescript": "^5"
+  }
+}
+</pre>
+    </div>
+  </div>
+  <p style="font-size:12px; color:#8b949e; margin-top:8px;">
+    <strong style="color:#c9d1d9;">Peer deps</strong> (React, core-shell) — provided by the shell at runtime, not bundled into the extension.<br>
+    <strong style="color:#c9d1d9;">Regular deps</strong> (xterm, chokidar, etc.) — bundled <em>into</em> the extension's dist. Extension is self-contained.
+  </p>
+</div>
+
+<div class="section">
+  <h3>Discovery order on startup</h3>
+  <div style="display:flex; flex-direction:column; gap:6px; font-size:12px;">
+    <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:#161b22; border-radius:6px; border:1px solid #30363d;">
+      <div style="font-size:16px; flex-shrink:0;">1️⃣</div>
+      <div>
+        <strong style="color:#c9d1d9;">Bundled (workspace packages)</strong>
+        <div style="color:#8b949e; margin-top:2px; line-height:1.5;">Extensions in the shell's own workspace. Always present. Can't be uninstalled.</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:#161b22; border-radius:6px; border:1px solid #30363d;">
+      <div style="font-size:16px; flex-shrink:0;">2️⃣</div>
+      <div>
+        <strong style="color:#c9d1d9;">Installed (node_modules scan)</strong>
+        <div style="color:#8b949e; margin-top:2px; line-height:1.5;">Scan <code style="background:#21262d; padding:1px 4px; border-radius:3px;">node_modules/</code> for packages with keyword <code style="background:#21262d; padding:1px 4px; border-radius:3px;">core-shell-extension</code>. Any npm package qualifies.</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:#1c2d1e; border-radius:6px; border:1.5px solid #3fb950;">
+      <div style="font-size:16px; flex-shrink:0;">3️⃣</div>
+      <div>
+        <strong style="color:#3fb950;">Local dev (extensions/ folder)</strong>
+        <div style="color:#8b949e; margin-top:2px; line-height:1.5;">Scan <code style="background:#21262d; padding:1px 4px; border-radius:3px;">extensions/</code> for subfolders with an <code style="background:#21262d; padding:1px 4px; border-radius:3px;">index.tsx</code> or <code style="background:#21262d; padding:1px 4px; border-radius:3px;">package.json</code>. Highest priority — overrides installed if IDs match. This is your dev loop.</div>
+      </div>
+    </div>
+  </div>
+</div>

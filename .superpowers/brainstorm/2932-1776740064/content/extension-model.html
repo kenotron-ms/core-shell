@@ -1,0 +1,114 @@
+<h2>Section 3 — Extension Model</h2>
+<p class="subtitle">What an extension looks like from the inside. Minimal surface, maximum output.</p>
+
+<div class="split" style="gap:16px; margin-bottom:16px;">
+
+  <!-- Left: structure + manifest -->
+  <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+    <div>
+      <div class="label" style="margin-bottom:6px;">Extension folder structure</div>
+      <div style="background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; font-family:monospace; font-size:11px; line-height:1.9; color:#c9d1d9;">
+<span style="color:#8b949e;">extensions/</span>
+<span style="color:#8b949e;">└─ </span><span style="color:#58a6ff;">amplifier-canvas/</span>
+<span style="color:#8b949e;">   ├─ </span><span style="color:#3fb950; font-weight:700;">index.tsx</span>      <span style="color:#8b949e;font-style:italic;">← entry point</span>
+<span style="color:#8b949e;">   ├─ </span><span style="color:#c9d1d9;">Canvas.tsx</span>     <span style="color:#8b949e;font-style:italic;">← main canvas UI</span>
+<span style="color:#8b949e;">   ├─ </span><span style="color:#c9d1d9;">Sidebar.tsx</span>    <span style="color:#8b949e;font-style:italic;">← session list</span>
+<span style="color:#8b949e;">   ├─ </span><span style="color:#c9d1d9;">Panel.tsx</span>      <span style="color:#8b949e;font-style:italic;">← terminal panel</span>
+<span style="color:#8b949e;">   └─ </span><span style="color:#c9d1d9;">StatusItem.tsx</span> <span style="color:#8b949e;font-style:italic;">← status bar</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom:6px;">index.tsx — the entire extension contract</div>
+      <div style="background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; font-family:monospace; font-size:10.5px; line-height:1.8; color:#c9d1d9;">
+<span style="color:#ff7b72;">import</span> <span style="color:#c9d1d9;">{ Canvas, Sidebar, Panel, StatusItem } </span><span style="color:#ff7b72;">from</span> <span style="color:#a5d6ff;">'./components'</span>
+<span style="color:#ff7b72;">import</span> <span style="color:#c9d1d9;">{ SessionsIcon } </span><span style="color:#ff7b72;">from</span> <span style="color:#a5d6ff;">'./icons'</span>
+
+<span style="color:#ff7b72;">export const</span> <span style="color:#79c0ff;">manifest</span> = {
+  <span style="color:#79c0ff;">id</span>:          <span style="color:#a5d6ff;">'amplifier-canvas'</span>,
+  <span style="color:#79c0ff;">displayName</span>: <span style="color:#a5d6ff;">'Amplifier Canvas'</span>,
+  <span style="color:#79c0ff;">version</span>:     <span style="color:#a5d6ff;">'0.1.0'</span>,
+
+  <span style="color:#79c0ff;">contributes</span>: {
+    <span style="color:#79c0ff;">activityRail</span>: { <span style="color:#79c0ff;">icon</span>: SessionsIcon, <span style="color:#79c0ff;">title</span>: <span style="color:#a5d6ff;">'Sessions'</span> },
+    <span style="color:#79c0ff;">sidebar</span>:      Sidebar,
+    <span style="color:#3fb950; font-weight:700;">canvas</span>:       <span style="color:#3fb950; font-weight:700;">Canvas</span>,     <span style="color:#8b949e; font-style:italic;">// ← the main UI</span>
+    <span style="color:#79c0ff;">panel</span>: { <span style="color:#79c0ff;">title</span>: <span style="color:#a5d6ff;">'Terminal'</span>, <span style="color:#79c0ff;">component</span>: Panel },
+    <span style="color:#79c0ff;">statusBar</span>: { <span style="color:#79c0ff;">position</span>: <span style="color:#a5d6ff;">'left'</span>, <span style="color:#79c0ff;">component</span>: StatusItem },
+  },
+}
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: shell API -->
+  <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+    <div>
+      <div class="label" style="margin-bottom:6px;">What the shell gives extensions — useShell()</div>
+      <div style="background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; font-family:monospace; font-size:10.5px; line-height:1.8; color:#c9d1d9;">
+<span style="color:#8b949e;">// Inside any extension component:</span>
+<span style="color:#ff7b72;">const</span> shell = <span style="color:#d2a8ff;">useShell</span>()
+
+<span style="color:#8b949e;">// ── State ──────────────────────────────</span>
+shell.<span style="color:#79c0ff;">theme</span>           <span style="color:#8b949e;">// 'light' | 'dark'</span>
+shell.<span style="color:#79c0ff;">activeExtension</span>  <span style="color:#8b949e;">// currently focused extension id</span>
+
+<span style="color:#8b949e;">// ── Navigation ─────────────────────────</span>
+shell.<span style="color:#d2a8ff;">openTab</span>(extensionId)
+shell.<span style="color:#d2a8ff;">setTitle</span>(text)    <span style="color:#8b949e;">// update title bar</span>
+
+<span style="color:#8b949e;">// ── IPC bridge (→ main process) ────────</span>
+<span style="color:#ff7b72;">await</span> shell.ipc.<span style="color:#d2a8ff;">readFile</span>(path)
+<span style="color:#ff7b72;">await</span> shell.ipc.<span style="color:#d2a8ff;">writeFile</span>(path, content)
+shell.ipc.<span style="color:#d2a8ff;">watchDir</span>(path, callback) <span style="color:#8b949e;">// → unsubscribe fn</span>
+<span style="color:#ff7b72;">await</span> shell.ipc.<span style="color:#d2a8ff;">spawn</span>(cmd, args)   <span style="color:#8b949e;">// → PTY instance</span>
+
+<span style="color:#8b949e;">// ── Commands ───────────────────────────</span>
+shell.<span style="color:#d2a8ff;">registerCommand</span>(<span style="color:#a5d6ff;">'canvas.clearAll'</span>, handler)
+shell.<span style="color:#d2a8ff;">executeCommand</span>(<span style="color:#a5d6ff;">'workbench.reload'</span>)
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom:6px;">Extension-local state (no Zustand boilerplate)</div>
+      <div style="background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; font-family:monospace; font-size:10.5px; line-height:1.8; color:#c9d1d9;">
+<span style="color:#8b949e;">// Each extension gets its own isolated store</span>
+<span style="color:#ff7b72;">const</span> [state, setState] = <span style="color:#d2a8ff;">useExtensionStore</span>({
+  sessions: [],
+  activeSessionId: <span style="color:#79c0ff;">null</span>,
+})
+
+<span style="color:#8b949e;">// Shell handles persistence, extension</span>
+<span style="color:#8b949e;">// doesn't need to think about it.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading mechanism -->
+<div>
+  <div class="label" style="margin-bottom:8px;">How extensions are discovered and loaded</div>
+  <div style="display:flex; gap:0; align-items:stretch; font-size:11px;">
+    <div style="flex:1; background:#161b22; border:1px solid #30363d; border-radius:6px 0 0 6px; padding:10px 12px; border-right:none;">
+      <div style="color:#58a6ff; font-weight:700; margin-bottom:4px;">1. Discovery</div>
+      <div style="color:#8b949e; line-height:1.6;">Shell scans <code style="background:#21262d;padding:1px 4px;border-radius:3px;">extensions/</code> dir on startup. Any subfolder with an <code style="background:#21262d;padding:1px 4px;border-radius:3px;">index.tsx</code> is an extension candidate.</div>
+    </div>
+    <div style="width:28px; display:flex; align-items:center; justify-content:center; color:#58a6ff; background:#0d1117; font-size:16px;">→</div>
+    <div style="flex:1; background:#161b22; border:1px solid #30363d; padding:10px 12px; border-left:none; border-right:none;">
+      <div style="color:#58a6ff; font-weight:700; margin-bottom:4px;">2. Import</div>
+      <div style="color:#8b949e; line-height:1.6;">Dynamic <code style="background:#21262d;padding:1px 4px;border-radius:3px;">import()</code> of the manifest. Components stay lazy until the user activates their slot.</div>
+    </div>
+    <div style="width:28px; display:flex; align-items:center; justify-content:center; color:#58a6ff; background:#0d1117; font-size:16px;">→</div>
+    <div style="flex:1; background:#161b22; border:1px solid #30363d; padding:10px 12px; border-left:none; border-right:none;">
+      <div style="color:#58a6ff; font-weight:700; margin-bottom:4px;">3. Register</div>
+      <div style="color:#8b949e; line-height:1.6;">Contributions added to shell's slot registry. Activity rail icon appears. Commands registered in palette.</div>
+    </div>
+    <div style="width:28px; display:flex; align-items:center; justify-content:center; color:#58a6ff; background:#0d1117; font-size:16px;">→</div>
+    <div style="flex:1; background:#1c2d1e; border:1.5px solid #3fb950; border-radius:0 6px 6px 0; padding:10px 12px;">
+      <div style="color:#3fb950; font-weight:700; margin-bottom:4px;">4. Mount</div>
+      <div style="color:#8b949e; line-height:1.6;">When user activates, React mounts the component inside an <strong style="color:#c9d1d9;">error boundary</strong>. Crash = scoped to that slot only.</div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:14px;">New extension = new folder. No CLI. No publish. No config file outside the folder. Restart and it's there.</p>

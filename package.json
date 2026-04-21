@@ -1,0 +1,10 @@
+{
+  "name": "core-shell-repo",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "pnpm --filter demo-app dev",
+    "build": "pnpm -r build",
+    "install:all": "pnpm install"
+  }
+}
