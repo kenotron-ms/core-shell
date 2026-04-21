@@ -14,7 +14,8 @@
     "./preload": {
       "import": "./dist/preload/index.js",
       "types": "./dist/preload/index.d.ts"
-    }
+    },
+    "./dist/style.css": "./dist/style.css"
   },
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly",
