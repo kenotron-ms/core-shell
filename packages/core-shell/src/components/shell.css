@@ -230,6 +230,12 @@
   background: var(--cs-accent);
 }
 
+/* Disable transitions during drag — prevents lag */
+.cs-root.is-dragging .cs-sidebar,
+.cs-root.is-dragging .cs-panel {
+  transition: none;
+}
+
 /* Panel */
 .cs-panel {
   background: var(--cs-surface);

@@ -9,4 +9,9 @@ export default defineConfig({
     rollupOptions: { external: ['react', 'react/jsx-runtime', 'react-dom'] },
     outDir: 'dist',
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: [],
+  },
 })

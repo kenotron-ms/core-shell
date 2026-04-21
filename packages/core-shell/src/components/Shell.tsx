@@ -80,7 +80,7 @@ export function Shell({ children }: ShellProps) {
   }, [openCommandPalette, closeCommandPalette])
 
   return (
-    <div className="cs-root">
+    <div className={`cs-root${draggingV || draggingH ? ' is-dragging' : ''}`}>
       <div className="cs-title-bar">
         <span className="cs-title-bar__title">core-shell</span>
       </div>
