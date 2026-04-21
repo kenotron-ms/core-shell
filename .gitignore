@@ -6,3 +6,4 @@ release
 packages/demo-app/out
 packages/*/dist
 *.js.map
+.superpowers/

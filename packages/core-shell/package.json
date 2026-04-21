@@ -1,0 +1,39 @@
+{
+  "name": "core-shell",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./main": {
+      "import": "./dist/main/index.js",
+      "types": "./dist/main/index.d.ts"
+    },
+    "./preload": {
+      "import": "./dist/preload/index.js",
+      "types": "./dist/preload/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly"
+  },
+  "peerDependencies": {
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "dependencies": {
+    "zustand": "^5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4",
+    "typescript": "^5",
+    "vite": "^5",
+    "vite-plugin-dts": "^4",
+    "react": "^18",
+    "react-dom": "^18",
+    "@types/react": "^18",
+    "@types/react-dom": "^18"
+  }
+}
