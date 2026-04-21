@@ -23,9 +23,7 @@ interface ShellStore {
 
 const DEFAULT_LAYOUT: LayoutState = {
   sidebarWidth: 220,
-  sidebarCollapsed: false,
   panelHeight: 200,
-  panelCollapsed: false,
   rightSidebarWidth: 280,
   rightSidebarVisible: false,
 }

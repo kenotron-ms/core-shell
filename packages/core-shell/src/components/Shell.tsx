@@ -11,6 +11,12 @@ import { Panel } from './Panel'
 import { StatusBar } from './StatusBar'
 import { CommandPalette } from './CommandPalette'
 
+// Snap thresholds: drag below these → collapse to 0
+const SIDEBAR_SNAP = 80   // px — below this width, sidebar snaps shut
+const SIDEBAR_MIN  = 150  // px — minimum open width (also the snap-open target)
+const PANEL_SNAP   = 60   // px — below this height, panel snaps shut
+const PANEL_MIN    = 80   // px — minimum open height (also the snap-open target)
+
 interface ShellProps {
   children?: ReactNode
 }
@@ -32,9 +38,14 @@ export function Shell({ children }: ShellProps) {
     const startX = e.clientX
     const startW = layout.sidebarWidth
     const onMove = (ev: MouseEvent) => {
-      requestAnimationFrame(() =>
-        setLayout({ sidebarWidth: Math.max(150, Math.min(500, startW + ev.clientX - startX)) })
-      )
+      const raw = startW + ev.clientX - startX
+      requestAnimationFrame(() => {
+        if (raw < SIDEBAR_SNAP) {
+          setLayout({ sidebarWidth: 0 })
+        } else {
+          setLayout({ sidebarWidth: Math.max(SIDEBAR_MIN, Math.min(500, raw)) })
+        }
+      })
     }
     const onUp = () => {
       setDraggingV(false)
@@ -51,9 +62,14 @@ export function Shell({ children }: ShellProps) {
     const startY = e.clientY
     const startH = layout.panelHeight
     const onMove = (ev: MouseEvent) => {
-      requestAnimationFrame(() =>
-        setLayout({ panelHeight: Math.max(80, Math.min(600, startH - (ev.clientY - startY))) })
-      )
+      const raw = startH - (ev.clientY - startY)
+      requestAnimationFrame(() => {
+        if (raw < PANEL_SNAP) {
+          setLayout({ panelHeight: 0 })
+        } else {
+          setLayout({ panelHeight: Math.max(PANEL_MIN, Math.min(600, raw)) })
+        }
+      })
     }
     const onUp = () => {
       setDraggingH(false)
@@ -64,16 +80,13 @@ export function Shell({ children }: ShellProps) {
     document.addEventListener('mouseup', onUp)
   }
 
-  // Cmd+Shift+P / Ctrl+Shift+P to open command palette
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'P') {
         e.preventDefault()
         openCommandPalette()
       }
-      if (e.key === 'Escape') {
-        closeCommandPalette()
-      }
+      if (e.key === 'Escape') closeCommandPalette()
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
@@ -95,53 +108,32 @@ export function Shell({ children }: ShellProps) {
       <div className="cs-body">
         <ActivityRail items={[]} />
 
-        {!layout.sidebarCollapsed && (
-          <>
-            <Sidebar
-              width={layout.sidebarWidth}
-              collapsed={layout.sidebarCollapsed}
-              onCollapseToggle={() => setLayout({ sidebarCollapsed: true })}
-            >
-              <p style={{ color: 'var(--cs-text-muted)', fontSize: 12 }}>No extension loaded</p>
-            </Sidebar>
-            <div
-              className={`cs-resize-handle-v ${draggingV ? 'cs-resize-handle-v--dragging' : ''}`}
-              onMouseDown={startDragV}
-            />
-          </>
+        {layout.sidebarWidth > 0 && (
+          <Sidebar width={layout.sidebarWidth}>
+            <p style={{ color: 'var(--cs-text-muted)', fontSize: 12 }}>No extension loaded</p>
+          </Sidebar>
         )}
 
-        {layout.sidebarCollapsed && (
-          <button
-            style={{
-              width: 28,
-              background: 'var(--cs-surface)',
-              border: 'none',
-              color: 'var(--cs-text-muted)',
-              cursor: 'pointer',
-              borderRight: '1px solid var(--cs-border)',
-              fontSize: 16,
-            }}
-            onClick={() => setLayout({ sidebarCollapsed: false })}
-            aria-label="Expand sidebar"
-          >
-            {'\u203A'}
-          </button>
-        )}
+        {/* Resize handle is ALWAYS rendered — drag right from here when sidebar is hidden */}
+        <div
+          className={`cs-resize-handle-v${draggingV ? ' cs-resize-handle-v--dragging' : ''}`}
+          onMouseDown={startDragV}
+        />
 
         <div className="cs-main">
           <Canvas>{children}</Canvas>
+
+          {/* Resize handle is ALWAYS rendered — drag up from here when panel is hidden */}
           <div
-            className={`cs-resize-handle-h ${draggingH ? 'cs-resize-handle-h--dragging' : ''}`}
+            className={`cs-resize-handle-h${draggingH ? ' cs-resize-handle-h--dragging' : ''}`}
             onMouseDown={startDragH}
           />
-          <Panel
-            height={layout.panelHeight}
-            collapsed={layout.panelCollapsed}
-            onCollapseToggle={() => setLayout({ panelCollapsed: !layout.panelCollapsed })}
-          >
-            <p style={{ color: 'var(--cs-text-muted)', fontSize: 12 }}>No panel extension loaded</p>
-          </Panel>
+
+          {layout.panelHeight > 0 && (
+            <Panel height={layout.panelHeight}>
+              <p style={{ color: 'var(--cs-text-muted)', fontSize: 12 }}>No panel extension loaded</p>
+            </Panel>
+          )}
         </div>
 
         <RightSidebar

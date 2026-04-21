@@ -20,9 +20,7 @@ export interface ActivityRailItem {
 
 export interface LayoutState {
   sidebarWidth: number
-  sidebarCollapsed: boolean
   panelHeight: number
-  panelCollapsed: boolean
   rightSidebarWidth: number
   rightSidebarVisible: boolean
 }

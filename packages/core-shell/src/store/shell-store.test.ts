@@ -67,10 +67,10 @@ describe('useShellStore – command palette', () => {
 
 describe('useShellStore – layout', () => {
   it('patches layout without overwriting untouched fields', () => {
-    useShellStore.getState().setLayout({ sidebarCollapsed: true })
+    useShellStore.getState().setLayout({ sidebarWidth: 300 })
 
     const { layout } = useShellStore.getState()
-    expect(layout.sidebarCollapsed).toBe(true)
-    expect(layout.sidebarWidth).toBe(220) // unchanged default
+    expect(layout.sidebarWidth).toBe(300)
+    expect(layout.panelHeight).toBe(200) // unchanged default
   })
 })
