@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build `core-shell` — a VS Code-inspired Electron desktop application shell where all canvas content is provided by extensions. The shell itself is a permanent chrome/layout engine; everything inside the "editor area" equivalent is extension-defined. The first canvas app target is `amplifier-canvas` (a session cockpit for the Amplifier AI CLI), but the platform is general-purpose.
+Build `core-shell` — an npm library that provides a VS Code-inspired Electron desktop application shell where all canvas content is provided by extensions. The shell itself is a permanent chrome/layout engine; everything inside the "editor area" equivalent is extension-defined. Apps like `amplifier-canvas` import core-shell and build their product on top of it. The repo itself contains a reference demo app (`packages/demo-app`) to demonstrate usage.
 
 **Reference project:** `~/workspace/ms/canvas` — a pre-code fully-specced Electron + React + TypeScript + Zustand app that will become the first extension built on core-shell.
 
@@ -40,10 +40,57 @@ Extensions are React components that mount into named slots. One Chromium render
 
 ## Architecture
 
-### Two-Process Electron Model
+### Monorepo Structure
+
+core-shell is an npm library, not a standalone Electron app. The repo is a monorepo with npm workspaces:
 
 ```
-┌─────────────────────────────────────────────────────┐
+core-shell/ (monorepo)
+├── packages/
+│   ├── core-shell/          ← the npm library (name: "core-shell")
+│   │   └── src/
+│   │       ├── components/  ← ShellProvider, Shell, ActivityRail, TabBar, Sidebar,
+│   │       │                   Canvas, RightSidebar, Panel, StatusBar, CommandPalette
+│   │       ├── store/       ← shell-store.ts, extension-registry.ts
+│   │       ├── extension/   ← useShell.ts, useExtensionStore.ts, ExtensionErrorBoundary.tsx
+│   │       ├── main/        ← main process utilities for Electron app authors
+│   │       └── preload/     ← contextBridge preload bridge for Electron app authors
+│   ├── demo-app/            ← reference Electron app — imports core-shell, ships with ext-hello-world loaded
+│   │   └── src/
+│   │       ├── main/        ← Electron main process using core-shell main utilities
+│   │       ├── preload/     ← using core-shell preload bridge
+│   │       └── renderer/    ← App.tsx wraps ShellProvider with ext-hello-world configured
+│   └── ext-hello-world/     ← Hello World reference extension (name: "ext-hello-world")
+│       └── src/index.tsx    ← manifest + all 6 slot contributions
+├── docs/
+└── package.json             ← npm workspaces root
+```
+
+Apps import core-shell and wire up their own Electron main/renderer/preload processes using the utilities the library provides. The demo-app package demonstrates this pattern end-to-end.
+
+### Package Exports
+
+What core-shell exports for app authors:
+
+```typescript
+// Renderer (React)
+export { ShellProvider, Shell } from 'core-shell'
+export { useShell, useExtensionStore, ExtensionErrorBoundary } from 'core-shell'
+export type { Manifest, Contributes, ShellAPI } from 'core-shell'
+
+// Main process
+export { createMainProcess, registerIPCHandlers } from 'core-shell/main'
+
+// Preload
+export { createPreloadBridge } from 'core-shell/preload'
+```
+
+### Two-Process Electron Model (App Author's Responsibility)
+
+The consuming app (not core-shell itself) is responsible for the Electron two-process model. core-shell provides utilities for both sides:
+
+```
+┌─────────────────────────────────────────────────────────┐
 │                  Main Process (Node.js)              │
 │                                                     │
 │  Window management    │  Extension loader/discoverer │
@@ -51,24 +98,30 @@ Extensions are React components that mount into named slots. One Chromium render
 │  IPC handler registry │  chokidar file watchers     │
 │  node-pty PTY instances │  npm subprocess            │
 │                                                     │
+│  App author uses: createMainProcess, registerIPCHandlers │
+│  from 'core-shell/main'                             │
+│                                                     │
 │  ⚠ Never imports React. Never touches the DOM.       │
-└───────────────────┬─────────────────────────────────┘
+└───────────────────┬─────────────────────────────────────┘
                     │ contextBridge (typed preload.ts)
-┌───────────────────▼─────────────────────────────────┐
+                    │ App author uses: createPreloadBridge
+                    │ from 'core-shell/preload'
+┌───────────────────▼─────────────────────────────────────┐
 │             Renderer Process (Chromium + React)      │
 │                                                     │
-│  All UI (shell chrome + extension components)        │
+│  App author wraps root in <ShellProvider>            │
+│  Shell chrome + extension components render inside   │
 │  Shell Zustand store                                 │
 │  Extension Zustand stores (isolated, per-extension)  │
 │                                                     │
 │  ⚠ Cannot call Node APIs directly — everything       │
 │    goes through the typed IPC bridge.                │
-└─────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────┘
 ```
 
-**Main Process (Node.js):** Window management, file system (Node APIs), extension loader/discoverer, native menus, IPC handler registry, chokidar file watchers, node-pty PTY instances, npm subprocess (for `core-shell install`). Never imports React. Never touches the DOM.
+**Main Process (Node.js):** Window management, file system (Node APIs), extension loader/discoverer, native menus, IPC handler registry, chokidar file watchers, node-pty PTY instances, npm subprocess (for extension install). App authors bootstrap this using `createMainProcess` and `registerIPCHandlers` from `core-shell/main`. Never imports React. Never touches the DOM.
 
-**Renderer Process (Chromium + React):** All UI. Bridged to main via typed `contextBridge` preload (`preload.ts`). Renderer cannot call Node APIs directly — everything goes through the typed IPC bridge.
+**Renderer Process (Chromium + React):** All UI. App authors wrap their root component in `<ShellProvider>` from `core-shell`. Bridged to main via typed `contextBridge` preload using `createPreloadBridge` from `core-shell/preload`. Renderer cannot call Node APIs directly — everything goes through the typed IPC bridge.
 
 ### Shell Chrome (permanent — extensions cannot modify)
 
@@ -265,7 +318,7 @@ The bundled Hello World extension doubles as a living integration test — if it
 
 core-shell is done when all five of the following are demonstrably true:
 
-1. **The app runs** — the Electron shell launches with full VS Code-like chrome: activity rail, sidebar, canvas area, right sidebar, bottom panel, status bar, tab bar. Real UI, real layout engine, real extension loaded into it.
+1. **The demo-app runs** — the reference Electron app in `packages/demo-app` launches with full VS Code-like chrome: activity rail, sidebar, canvas area, right sidebar, bottom panel, status bar, tab bar. Real UI, real layout engine, real extension loaded into it. core-shell itself is a library with no entry point — the demo-app proves the library works by importing it and building a complete shell.
 
 2. **Stable + dev side-by-side** — a packaged binary (`electron-builder` output) and a hot-reloaded dev server (`electron-vite` HMR) run simultaneously in two windows. A change to an extension file appears in the dev window in ~1s; the stable window is unaffected.
 
@@ -286,3 +339,5 @@ core-shell is done when all five of the following are demonstrably true:
 4. **Right sidebar ownership** — Is it always extension-defined, or can the shell contribute a default properties panel when no extension claims it?
 
 5. **Tab model** — Can multiple instances of the same extension be open in different tabs simultaneously, or is it one-instance-per-extension?
+
+6. **App author configuration** — How does an app author configure core-shell? (ShellProvider props vs config file vs environment?)
