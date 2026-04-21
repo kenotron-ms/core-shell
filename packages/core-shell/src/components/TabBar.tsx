@@ -16,6 +16,7 @@ export function TabBar({ tabs, activeTabId, onTabClick, onTabClose, onNewTab }: 
           key={tab.id}
           className={`cs-tab ${tab.id === activeTabId ? 'cs-tab--active' : ''}`}
           role="tab"
+          aria-label={tab.label}
           aria-selected={tab.id === activeTabId}
           onClick={() => onTabClick(tab.id)}
         >

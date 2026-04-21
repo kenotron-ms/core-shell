@@ -40,6 +40,7 @@ export function CommandPalette({ open, onClose, commands }: Props) {
               key={cmd.id}
               className="cs-command-palette__item"
               role="option"
+              aria-label={cmd.label}
               onClick={() => { cmd.onSelect(); onClose() }}
             >
               {cmd.label}
