@@ -7,3 +7,28 @@ packages/demo-app/out
 packages/*/dist
 *.js.map
 .superpowers/
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite cache
+.vite/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
