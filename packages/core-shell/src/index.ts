@@ -1,3 +1,9 @@
+export { ActivityRail } from './components/ActivityRail'
+export { TabBar } from './components/TabBar'
+export { Sidebar } from './components/Sidebar'
+export { Canvas } from './components/Canvas'
+export { RightSidebar } from './components/RightSidebar'
+export { Panel } from './components/Panel'
+export { StatusBar } from './components/StatusBar'
+export { CommandPalette } from './components/CommandPalette'
 export * from './types'
-// Components and hooks are added to this barrel as they are created in Tasks 3-7.
-// Do NOT add exports for files that don't exist yet — build will fail.

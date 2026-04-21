@@ -1,0 +1,17 @@
+:root {
+  --cs-bg: #0d1117;
+  --cs-surface: #161b22;
+  --cs-surface-hover: #21262d;
+  --cs-border: #21262d;
+  --cs-border-subtle: #30363d;
+  --cs-text: #c9d1d9;
+  --cs-text-muted: #8b949e;
+  --cs-accent: #388bfd;
+  --cs-accent-hover: #58a6ff;
+  --cs-status-bar-bg: #1c4b9b;
+  --cs-status-bar-text: #cce5ff;
+  --cs-activity-rail-width: 44px;
+  --cs-tab-bar-height: 32px;
+  --cs-title-bar-height: 28px;
+  --cs-status-bar-height: 20px;
+}
