@@ -1,3 +1,5 @@
+import type { ComponentType, ReactNode } from 'react'
+
 export interface TabEntry {
   id: string
   label: string
@@ -12,7 +14,7 @@ export interface CommandEntry {
 
 export interface ActivityRailItem {
   id: string
-  icon: React.ReactNode
+  icon: ReactNode
   title: string
   active?: boolean
   onClick: () => void
@@ -22,13 +24,20 @@ export interface LayoutState {
   sidebarWidth: number
   panelHeight: number
   rightSidebarWidth: number
-  rightSidebarVisible: boolean
 }
 
-// Stubs for Phase 1B
+export interface ExtensionContributes {
+  activityRail?: { icon: ReactNode; title: string }
+  sidebar?: ComponentType
+  canvas?: ComponentType
+  rightSidebar?: ComponentType
+  panel?: ComponentType
+  statusBar?: Array<{ position: 'left' | 'right'; component: ComponentType }>
+}
+
 export interface Manifest {
   id: string
   displayName: string
   version: string
-  contributes: Record<string, unknown>
+  contributes: ExtensionContributes
 }

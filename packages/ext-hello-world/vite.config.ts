@@ -1,0 +1,12 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import dts from 'vite-plugin-dts'
+
+export default defineConfig({
+  plugins: [react(), dts({ include: ['src'], rollupTypes: true })],
+  build: {
+    lib: { entry: 'src/index.tsx', formats: ['es'], fileName: 'index' },
+    rollupOptions: { external: ['react', 'react/jsx-runtime', 'core-shell'] },
+    outDir: 'dist',
+  },
+})

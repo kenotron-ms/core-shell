@@ -25,7 +25,6 @@ const DEFAULT_LAYOUT: LayoutState = {
   sidebarWidth: 220,
   panelHeight: 200,
   rightSidebarWidth: 280,
-  rightSidebarVisible: false,
 }
 
 export const useShellStore = create<ShellStore>((set) => ({

@@ -37,56 +37,6 @@
   font-size: 12px;
 }
 
-/* Tab bar */
-.cs-tab-bar {
-  height: var(--cs-tab-bar-height);
-  background: var(--cs-bg);
-  border-bottom: 1px solid var(--cs-border);
-  display: flex;
-  align-items: flex-end;
-  padding-left: var(--cs-activity-rail-width);
-  flex-shrink: 0;
-  overflow-x: auto;
-}
-.cs-tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  background: var(--cs-bg);
-  border: 1px solid var(--cs-border);
-  border-bottom: none;
-  border-radius: 4px 4px 0 0;
-  cursor: pointer;
-  color: var(--cs-text-muted);
-  white-space: nowrap;
-}
-.cs-tab--active {
-  background: var(--cs-surface);
-  color: var(--cs-text);
-  border-top: 1.5px solid var(--cs-accent);
-}
-.cs-tab__close {
-  background: none;
-  border: none;
-  color: var(--cs-text-muted);
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-  padding: 0 2px;
-}
-.cs-tab__close:hover {
-  color: var(--cs-text);
-}
-.cs-tab-bar__new {
-  background: none;
-  border: none;
-  color: var(--cs-text-muted);
-  cursor: pointer;
-  font-size: 18px;
-  padding: 0 8px;
-  margin-bottom: 4px;
-}
 
 /* Body */
 .cs-body {
@@ -219,6 +169,7 @@
 
 /* Disable transitions during drag — prevents lag */
 .cs-root.is-dragging .cs-sidebar,
+.cs-root.is-dragging .cs-right-sidebar,
 .cs-root.is-dragging .cs-panel {
   transition: none;
 }

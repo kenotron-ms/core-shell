@@ -74,3 +74,15 @@ describe('useShellStore – layout', () => {
     expect(layout.panelHeight).toBe(200) // unchanged default
   })
 })
+
+describe('useShellStore – right sidebar visibility via width', () => {
+  it('rightSidebarWidth defaults to 280 (right sidebar visible by default)', () => {
+    const { layout } = useShellStore.getState()
+    expect(layout.rightSidebarWidth).toBe(280)
+  })
+
+  it('layout has no rightSidebarVisible field', () => {
+    const { layout } = useShellStore.getState()
+    expect('rightSidebarVisible' in layout).toBe(false)
+  })
+})

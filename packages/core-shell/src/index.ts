@@ -1,5 +1,5 @@
 export { Shell } from './components/Shell'
-export { ShellProvider } from './components/ShellProvider'
+export { ShellProvider, ShellContext, useShellExtensions } from './components/ShellProvider'
 export { ActivityRail } from './components/ActivityRail'
 export { TabBar } from './components/TabBar'
 export { Sidebar } from './components/Sidebar'

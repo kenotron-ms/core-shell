@@ -56,6 +56,9 @@ importers:
       core-shell:
         specifier: workspace:*
         version: link:../core-shell
+      ext-hello-world:
+        specifier: workspace:*
+        version: link:../ext-hello-world
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -90,6 +93,30 @@ importers:
       vite:
         specifier: ^8.0.3
         version: 8.0.9(@types/node@25.6.0)(jiti@2.6.1)
+
+  packages/ext-hello-world:
+    devDependencies:
+      '@types/react':
+        specifier: ^18
+        version: 18.3.28
+      '@vitejs/plugin-react':
+        specifier: ^4
+        version: 4.7.0(vite@5.4.21(@types/node@25.6.0)(lightningcss@1.32.0))
+      core-shell:
+        specifier: workspace:*
+        version: link:../core-shell
+      react:
+        specifier: ^18
+        version: 18.3.1
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+      vite:
+        specifier: ^5
+        version: 5.4.21(@types/node@25.6.0)(lightningcss@1.32.0)
+      vite-plugin-dts:
+        specifier: ^4
+        version: 4.5.4(@types/node@25.6.0)(rollup@4.60.2)(typescript@5.9.3)(vite@5.4.21(@types/node@25.6.0)(lightningcss@1.32.0))
 
 packages:
 
